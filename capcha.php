@@ -5,9 +5,6 @@ $hide_right_panel = true;
 $root_dir = $_SERVER['DOCUMENT_ROOT'];
 include_once($root_dir.'/include/classes/lang.php');
 header('HTTP/1.1 403 Forbidden');
-
-
-/// asd asd sadsadasdasd ad
 ?>
 <!DOCTYPE html>
 <html lang="en" dir="ltr">
