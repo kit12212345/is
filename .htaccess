@@ -1,0 +1,48 @@
+AddDefaultCharset UTF-8
+
+php_flag display_errors off
+
+php_value session.gc_maxlifetime 604800
+
+ErrorDocument 404 /error_404.php
+
+RewriteEngine On
+
+php_value session.gc_maxlifetime 86400
+
+#RewriteCond %{HTTPS} off
+#RewriteCond %{HTTP:X-Forwarded-Proto} !https
+#RewriteRule ^(.*)$ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
+
+#RewriteCond %{REQUEST_FILENAME} !-d
+#RewriteRule ^(.*)/$ /$1 [L,R=301]
+
+#RewriteCond %{REQUEST_FILENAME}\.php -f
+#RewriteRule ^(.*)$ $1.php
+
+#RewriteCond %{SERVER_PORT} ^443$
+#RewriteRule ^.*$ https://%{SERVER_NAME}%{REQUEST_URI} [R=301,L]
+
+
+#RewriteCond %{REQUEST_FILENAME} !-f
+#RewriteRule ^([-A-Za-z0-9]+)$ /route.php?key1=$1&rd=true [L,QSA]
+#RewriteRule ^https://%{SERVER_NAME}%{REQUEST_URI}%|([-A-Za-z0-9]+)$ route.php?key1=$1 [R=301,L,QSA]
+
+#RewriteCond %{HTTP_HOST} ^www.hluble.com$ [NC]
+#RewriteRule ^(.*)$ https://hluble.com/%1$1 [R=301,L]
+
+
+#RewriteCond %{REQUEST_URI} ^/post.php$ [NC]
+#RewriteCond %{QUERY_STRING} post=(\d+) [NC]
+#RewriteRule ^(.*)$ https://hluble.com/route.php?key1=%1&key2=post&rd=true [R=301,L,QSA]
+
+#RewriteCond %{REQUEST_URI} ^/posts.php$ [NC]
+#RewriteCond %{QUERY_STRING} cat=(\d+) [NC]
+#RewriteRule ^(.*)$ https://hluble.com/route.php?key1=%1&key2=cat&rd=true [R=301,L,QSA]
+
+
+
+
+
+
+#RewriteRule ^([-A-Za-z0-9]+)$ /route.php?key1=$1&rd=true [L,QSA]

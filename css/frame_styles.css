@@ -1,0 +1,79 @@
+body{
+  margin: 0px;
+  padding: 10px;
+}
+figure{
+  margin: 0px;
+  padding: 0px;
+}
+img{
+  max-width: 100%;
+  display: inline-block;
+  vertical-align: middle;
+  -ms-interpolation-mode: bicubic;
+  outline: none;
+}
+.absolute{
+  position: absolute;
+}
+.all_null{
+  top: 0px;
+  right: 0px;
+  bottom: 0px;
+  left: 0px;
+}
+.select_disable{
+  -moz-user-select: -moz-none;
+  -o-user-select: none;
+  -khtml-user-select: none;
+  -webkit-user-select: none;
+  user-select: none;
+}
+.div_border{
+  position: absolute;
+  background: rgba(150, 13, 220, 0.16);
+}
+.div_border::before{
+  content: '';
+  position: absolute;
+  border: 3px solid #1f78d8;
+  width: initial;
+  height: initial;
+  top: 0px;
+  right: 0px;
+  bottom: 0px;
+  left: 0px;
+  overflow: hidden;
+  z-index: 1;
+}
+.div_dragg{
+  box-sizing: border-box;
+  position: absolute;
+  width: 10px;
+  height: 10px;
+  background: #fff;
+  border: 2px solid #000;
+  line-height: 1;
+  bottom: -4px;
+  z-index: 2;
+}
+.dragg_left{
+  right: -4px;
+  cursor: nw-resize;
+}
+.dragg_right{
+  left: -4px;
+  cursor: ne-resize;
+}
+.btn_edit_img{
+  margin: auto;
+  width: 80px;
+  height: 17px;
+  background: rgba(0, 0, 0, 0.86);
+  padding: 5px 10px;
+  border-radius: 4px;
+  color: #fff;
+  cursor: pointer;
+  font-size: 13px;
+  z-index: 5;
+}

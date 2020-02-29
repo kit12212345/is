@@ -1,0 +1,125 @@
+.cats_content .post_title{
+  padding: 15px;
+}
+.action_content{
+  padding-top: 0px;
+}
+.tab_action tr td .tpd{
+  margin: 10px 0px;
+  padding: 0px 10px;
+}
+.tab_action tr + tr{
+  margin-top: 10px;
+  border-top: 1px solid #ddd;
+}
+.ua_uinfo{
+  border-right: 1px solid #ddd;
+  border-left: 1px solid #ddd;
+
+}
+.au_uinfo{
+  width: 70%;
+}
+.ua_wr_info{
+  white-space: nowrap;
+  width: 20%;
+}
+.au_place span{
+  font-size: 20px;
+  font-weight: bold;
+}
+.au_place ._fp{
+  color: #d6b505;
+}
+.au_place ._sp{
+  color: #ababab;
+}
+.au_place ._tp{
+  color: #cd7f32;
+}
+.ua_img{
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  overflow: hidden;
+}
+.ua_inf{
+  max-width: 80%;
+}
+.ua_in_name{
+  margin-left: 10px;
+}
+.ua_name{
+  font-size: 17px;
+  font-weight: 500;
+  word-break: break-word;
+}
+.ua_look_recipes, .ua_count_recipes{
+  margin-top: 5px;
+}
+.ua_look_recipes a{
+  text-decoration: underline;
+}
+
+.ua_count_likes, .ua_count_likes *{
+  font-size: 20px;
+}
+
+@media screen and (max-width: 480px) {
+  .ua_img{
+    width: 30px;
+    height: 30px;
+  }
+  .ua_in_name{
+    margin-left: 5px;
+  }
+  .ua_name{
+    font-size: 15px;
+    font-weight: 500;
+  }
+  .au_place span{
+    font-size: 16px;
+  }
+
+  .au_place{
+    width: 9%;
+  }
+  .au_uinfo{
+    width: 65%;
+  }
+  .ua_wr_info{
+    width: 20%;
+    white-space: normal;
+  }
+
+
+  .ua_look_recipes, .ua_count_recipes{
+    margin-top: 5px;
+  }
+  .ua_look_recipes a{
+    text-decoration: underline;
+  }
+  .ua_count_likes{
+    font-size: 15px;
+    line-height: 30px;
+    text-align: center;
+  }
+  .ua_count_likes i{
+    display: block;
+  }
+
+}
+.ua_content .op_item{
+    width: 250px;
+}
+.act_count_likes{
+  top: 0px;
+  right: 0px;
+  background: rgba(0, 0, 0, 0.6392156862745098);
+  padding: 10px;
+}
+.date_contest{
+  font-size: 20px;
+  line-height: 32px;
+  margin-top: 0px;
+}

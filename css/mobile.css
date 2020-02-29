@@ -1,0 +1,166 @@
+@media screen and (max-width: 1024px) {
+  .mobile_header{
+    display: block;
+  }
+
+  .p_image img{
+    display: block;
+    margin: auto;
+  }
+
+
+  .ms_desc {
+    overflow: hidden;
+  }
+
+  .wrapper, ._center{
+    width: 97%;
+  }
+
+  .c_right_grid, .top_menu, .header{
+    display: none;
+  }
+
+  .c_left_grid{
+    width: 100%!important;
+  }
+
+  .op_item, .top_post_item{
+    width: 31%!important;
+    margin: 10px 1%!important;
+  }
+
+  .other_posts .op_item, .top_post_item{
+    width: 23%!important;
+  }
+
+  .p_search_input{
+    width: calc(100% - 88px);
+  }
+  .mbl_inp{
+    width: calc(100% - 45px);
+  }
+
+  .a_b_m_menu + .a_b_m_menu{
+    margin-left: 1%;
+  }
+  .a_b_m_menu{
+    width: 23%;
+    margin: 1%;
+  }
+
+}
+
+@media screen and (max-width: 800px) {
+  .bookmark_page{
+    margin-bottom: 10px;
+    float: none;
+  }
+
+  .p_image{
+    float: none;
+    margin: 0px;
+  }
+  .c_left_grid, .p_image, .post_pub_date,.tp_image{
+    width: 100%!important;
+  }
+
+  .op_item, .other_posts .op_item{
+    width: 48%!important;
+    margin: 10px 1%!important;
+  }
+
+  .post_pub_date{
+    text-align: left;
+  }
+  .post_tags{
+    margin: 5px 0px;
+  }
+
+  .posts_items{
+    padding: 0px 10px;
+  }
+
+
+  .a_b_m_menu + .a_b_m_menu{
+    margin-left: 1%;
+  }
+  .a_b_m_menu{
+    width: 48%;
+    margin: 1%;
+  }
+  .b_m_menu{
+    min-width: auto;
+    width: 100%;
+    overflow: hidden;
+  }
+  .m_page_title h1{
+    font-size: 3em;
+  }
+  .m_page_desc h2{
+    line-height: 30px;
+  }
+  .m_page_cont{
+    padding: 30px 0px;
+  }
+
+  .op_item + .op_item {
+    margin-left: 0px;
+  }
+
+  .post_content .post_title h1{
+    line-height: 35px;
+  }
+
+
+  .post_pub_date + .post_pub_date {
+    margin-left: 0px;
+    margin-top: 10px;
+  }
+
+  .top_post_item{
+    width: 48%!important;
+    margin: 10px 1%!important;
+  }
+
+
+}
+@media screen and (max-width: 480px) {
+  .cvo_show{
+    display: block;
+  }
+  .cvo_full_w{
+    width:100%!important;
+  }
+  .op_item, .other_posts .op_item{
+    width: 100%!important;
+  }
+
+  .op_item{
+    margin: 15px 0px!important;
+  }
+
+  .top_post_item{
+    width: 97%!important;
+    float: none;
+    margin: 15px auto!important;
+  }
+
+  .g-recaptcha > div{
+    width: 100%!important;
+  }
+  .g-recaptcha iframe{
+    width: 100%!important;
+  }
+  .btn_top_login{
+    width: 100%;
+    text-align: center;
+  }
+
+}
+
+@media screen and (max-width: 360px) {
+
+
+
+}
