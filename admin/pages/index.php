@@ -13,8 +13,8 @@ switch ($page) {
   case 'cat':
     include($root_dir.'/admin/pages/cat.php');
     break;
-  case 'add_recipe':
-    include($root_dir.'/admin/pages/add_recipe.php');
+  case 'orders':
+    include($root_dir.'/admin/pages/orders.php');
     break;
   case 'cats':
     include($root_dir.'/admin/pages/categories.php');
