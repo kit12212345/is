@@ -26,6 +26,7 @@ $body_class = $admin_id == 0 ? 'login-container' : '';
     <link href="css/components.css" rel="stylesheet" type="text/css">
     <link href="css/colors.css" rel="stylesheet" type="text/css">
     <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="/css/main.css">
     <!-- /global stylesheets -->
 
 

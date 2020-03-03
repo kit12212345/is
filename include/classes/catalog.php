@@ -37,7 +37,7 @@ class Catalog{
 
 
     $products = array();
-    $q_products = ("SELECT * FROM `catalog` WHERE `catalog`.`deleted` = '0'
+    $q_products = ("SELECT * FROM `catalog` WHERE `catalog`.`deleted` = '0' AND (`catalog`.`type` = 'catalog' OR `catalog`.`type` = 'product')
     AND `catalog`.`parent_id` = '".$parent_id."' ".$query_search." ".$order_by.$sql_limit);
     $r_products = mysql_query($q_products) or die("cant execute query");
     $n_products = mysql_numrows($r_products); // or die("cant get numrows query");

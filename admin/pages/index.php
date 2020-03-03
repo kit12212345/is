@@ -16,8 +16,8 @@ switch ($page) {
   case 'orders':
     include($root_dir.'/admin/pages/orders.php');
     break;
-  case 'cats':
-    include($root_dir.'/admin/pages/categories.php');
+  case 'view_order':
+    include($root_dir.'/admin/pages/view_order.php');
     break;
   case 'about':
     include($root_dir.'/admin/pages/about.php');

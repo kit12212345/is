@@ -1,4 +1,3 @@
-
 <script src="/admin/components/uploader/uploader.js?ver=<?php echo rand(0,199999); ?>" charset="utf-8"></script>
 <?php
 require($root_dir.'/admin/components/uploader/index.php');
@@ -39,6 +38,12 @@ echo '"save_product_cat": "'.(int)$save_product_cat.'",';
 echo '"action_id": "'.(int)$product_action_id.'"';
 echo '}\'></div>';
 ?>
+
+<script type="text/javascript">
+$(document).ready(function(){
+  catalog.init_product_edit();
+});
+</script>
 
 <div id="modal_theme_success" class="modal fade">
   <div class="modal-dialog">
@@ -110,6 +115,14 @@ echo '}\'></div>';
             </div>
             <div class="clear"></div>
           </div>
+
+          <div class="form-group">
+            <?php
+            include($root_dir.'/admin/modules/options/index.php');
+            ?>
+            <div class="clear"></div>
+          </div>
+
 
           <div class="form-group">
             <label class="control-label col-lg-2">Изображения:</label>
@@ -208,11 +221,6 @@ echo '}\'></div>';
 
 
   <script type="text/javascript">
-
-
-  $(document).ready(function(){
-    catalog.init_product_edit();
-  });
 
     var pressed_ctrl = false;
     var pressed_shift = false;

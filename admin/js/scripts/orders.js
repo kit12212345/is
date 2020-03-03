@@ -18,7 +18,7 @@ var orders = {
     var _this = orders;
 
     $('#disable_products_content').show();
-    ajx({
+    $.ajax({
       url: _this.url,
       method: 'post',
       dataType: 'json',
@@ -116,13 +116,12 @@ var orders = {
 
     return this.load_orders();
   },
-  delete_order: function(element){
+  delete_order: function(order_id){
     var _this = orders;
-    var order_id = $(element).attr('data-orderid');
 
     if(!confirm('Вы дейсвительно хотите удалить этот заказ?')) return false;
 
-    ajx({
+    $.ajax({
       url: _this.url,
       method: 'post',
       dataType: 'json',
@@ -132,12 +131,12 @@ var orders = {
       },
       success: function(data){
         if(data.result == 'true'){
-          var count_active_orders = data.count_active_orders;
-          $('#count_active_orders').text(data.count_active_orders);
-          if(count_active_orders <= 0){
-            $('#count_active_orders').hide();
-          }
-          return _this.load_orders();
+          // var count_active_orders = data.count_active_orders;
+          // $('#count_active_orders').text(data.count_active_orders);
+          // if(count_active_orders <= 0){
+          //   $('#count_active_orders').hide();
+          // }
+          // return _this.load_orders();
         } else{
           console.log(data.string);
         }
@@ -164,7 +163,7 @@ var orders = {
     var handle = $(element).attr('data-handle');
     if(typeof handle === 'undefined') return false;
 
-    ajx({
+    $.ajax({
       url: _this.url,
       method: 'post',
       dataType: 'json',
@@ -188,7 +187,7 @@ var orders = {
   },
   refresh_order: function(order_id) {
     var _this = orders;
-    ajx({
+    $.ajax({
       url: _this.url,
       method: 'post',
       dataType: 'json',
@@ -225,7 +224,7 @@ var orders = {
 
     var search_by = $('.i_by_search:checked').val();
 
-    ajx({
+    $.ajax({
       url: _this.url,
       method: 'post',
       dataType: 'json',
@@ -268,7 +267,7 @@ var orders = {
 
     if(products.length == 0) return false;
 
-    ajx({
+    $.ajax({
       url: _this.url,
       method: 'post',
       dataType: 'json',
@@ -312,7 +311,7 @@ var orders = {
     $('#s_pr_res').hide();
     $('#disable_s_product').show();
 
-    ajx({
+    $.ajax({
       url: _this.url,
       method: 'post',
       dataType: 'json',
@@ -359,7 +358,7 @@ var orders = {
     var result = prompt('Введите новое количетсво',now_count);
     result = parseInt(result);
     if(!isNaN(result) && result > 0){
-      ajx({
+      $.ajax({
         url: _this.url,
         method: 'post',
         dataType: 'json',
@@ -388,7 +387,7 @@ var orders = {
     var _this = orders;
     var item_id = $(element).attr('data-itemid');
     console.log(item_id);
-    ajx({
+    $.ajax({
       url: _this.url,
       method: 'post',
       dataType: 'json',
@@ -445,7 +444,7 @@ var orders = {
     if($('#order_' + order_id).css('display') == 'none'){
       if($('#order_conent_' + order_id).html() == ''){
         $('body').addClass('pr__load_');
-        ajx({
+        $.ajax({
           url: _this.url,
           method: 'post',
           dataType: 'json',
