@@ -1,0 +1,66 @@
+.opt_backr {
+  width: 20px;
+  height: 20px;
+  display: block;
+  margin: auto;
+}
+.vp_left_grid{
+  width: 60%;
+}
+.vp_right_grid{
+  width: 40%;
+  padding-left: 15px;
+}
+.product_images{
+  width: 15%;
+  padding-right: 10px;
+}
+.product_main_image{
+  width: 85%;
+}
+.ltl_img + .ltl_img{
+  margin-top: 10px;
+}
+.vp_info_item + .vp_info_item{
+  margin-top: 15px;
+}
+.vp_name h1{
+  margin: 5px 0px;
+}
+.vp_price{
+  font-size: 19px;
+  color: grey;
+}
+.opt_item{
+  width: 33px;
+  height: 33px;
+  padding: 5px;
+  cursor: pointer;
+  border: 1px solid #ddd;
+  margin-right: 5px;
+  font-weight: 500;
+  text-transform: uppercase;
+}
+.opt_item .opt_backr{
+  border-radius: 50%;
+}
+.active_opt{
+  box-shadow: inset 1px 1px 1px 1px #444444, inset -1px -1px 1px 1px #444444;
+}
+.opt_text{
+  padding: 2px;
+}
+.basket_btn_n{
+  width: 35px;
+  height: 35px;
+  padding: 10px 0px;
+}
+.basket_btns tbody tr td{
+  border: 1px solid #ddd;
+  vertical-align: middle;
+}
+.vp_b_quan{
+  width: 60px;
+  border: 0px;
+  height: 35px;
+}

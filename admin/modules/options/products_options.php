@@ -38,6 +38,32 @@ class ProductsOptions extends Options{
     return $parent_id;
   }
 
+
+  public function get_product_by_options($product_id, $options){
+    $count_items = count($options);
+
+    for ($i=0; $i < $count_items; $i++){
+      $and = ' AND ';
+      $sort_prop .= " ".$and." EXISTS (
+       SELECT `id` FROM `shop_options_items`
+       WHERE `propert_id` = '".(int)$options[$i]['option_id']."' AND `parent_product_id` = '".$product_id."' AND `shop_options_items`.`product_id` = `catalog`.`id`)";
+    }
+
+    $q_exist = ("SELECT DISTINCT `catalog`.`id` FROM `shop_options_items`
+    INNER JOIN `catalog` ON (`catalog`.`id` = `shop_options_items`.`product_id`)
+    WHERE `shop_options_items`.`parent_product_id` = '".$product_id."'
+    ".$sort_prop."");
+    $r_exist = mysql_query($q_exist) or die(DB_ERROR);
+    $n_exist = mysql_numrows($r_exist); // or die("cant get numrows query");
+    if($n_exist > 0){
+      $product_id = htmlspecialchars(mysql_result($r_exist, 0, "id"));
+
+    } else return false;
+
+
+    return $product_id;
+  }
+
   public function exists_option($product_id,$data,$fs_id){
     $str_items = implode(',',$data);
     $count_items = count($data);
@@ -58,7 +84,7 @@ class ProductsOptions extends Options{
     INNER JOIN `catalog` ON (`catalog`.`id` = `shop_options_items`.`product_id`)
     WHERE `shop_options_items`.`parent_product_id` = '".$product_id."'
     ".$sort_prop."");
-    $r_exist = mysql_query($q_exist) or die($q_exist);
+    $r_exist = mysql_query($q_exist) or die(DB_ERROR);
     $n_exist = mysql_numrows($r_exist); // or die("cant get numrows query");
     if($n_exist > 0){
       $product_id = htmlspecialchars(mysql_result($r_exist, 0, "id"));

@@ -22,7 +22,6 @@ var products_options = {
     this.__proto__ = commom_object(__properts__,__options__);
     this.init_properts();
     this.init_options();
-    console.log(catalog.current_product_id);
     this.current_product_id = catalog.current_product_id;
   },
   close_modal: function(name){

@@ -20,8 +20,13 @@ if($action == 'add'){
   $basket->add($_POST);
   echo json_encode(array('result' => 'true'));
 } else if($_POST['action'] == 'change_quan'){
-  $basket->change_quan($_POST);
-  echo json_encode(array('result' => 'true'));
+  
+  $result = $basket->change_quan($_POST);
+  echo json_encode(array(
+    'result' => 'true',
+    'quan' => $result['quan']
+  ));
+
 } else if($_POST['action'] == 'remove'){
   $id = (int)$_POST['item_id'];
   $basket->remove($id);

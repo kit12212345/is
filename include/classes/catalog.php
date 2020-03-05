@@ -1,6 +1,4 @@
 <?php
-
-
 class Catalog{
   public $create_date;
   public $goods_per_page = 25;
@@ -99,6 +97,95 @@ class Catalog{
       'cat_path_html' => $cat_path_html
     );
 
+  }
+
+  public function get_products($data = array()){
+    $html = '';
+
+    $parent_id = (int)$data['parent_id'];
+    $search_str = $data['search_str'];
+    $search_by = $data['search_by'];
+    $page = (int)$data['page'];
+    $goods_per_page = (int)$data['goods_per_page'];
+
+    $goods_per_page = $goods_per_page <= 0 ? $this->goods_per_page : $goods_per_page;
+    $page = $page <= 0 ? 1 : $page;
+    $search_str = mysql_real_escape_string($search_str);
+
+    $search_field = 'name';
+
+    if($search_by == 'by_code') $search_field = 'id';
+
+    $query_search = !empty($search_str) ? " AND `catalog`.`".$search_field."` LIKE '%".$search_str."%'" : "";
+
+    $order_by = " ORDER BY `catalog`.`name` ASC";
+
+    $offset = ($page - 1) * $goods_per_page;
+    $sql_limit = " LIMIT " . $offset . "," .  $goods_per_page;
+
+
+    $products = array();
+    $q_products = ("SELECT * FROM `catalog` WHERE `catalog`.`deleted` = '0' AND `catalog`.`type` = 'product'
+    AND `catalog`.`parent_id` = '".$parent_id."' ".$query_search." ".$order_by.$sql_limit);
+    $r_products = mysql_query($q_products) or die("cant execute query");
+    $n_products = mysql_numrows($r_products); // or die("cant get numrows query");
+    if($n_products > 0){
+      for ($i = 0; $i < $n_products; $i++) {
+        $id = htmlspecialchars(mysql_result($r_products, $i, "catalog.id"));
+        $type = htmlspecialchars(mysql_result($r_products, $i, "catalog.type"));
+        $name = htmlspecialchars(mysql_result($r_products, $i, "catalog.name"));
+        $description = htmlspecialchars(mysql_result($r_products, $i, "catalog.description"));
+        $price = htmlspecialchars(mysql_result($r_products, $i, "catalog.price"));
+        $quan = htmlspecialchars(mysql_result($r_products, $i, "catalog.quan"));
+        $status = htmlspecialchars(mysql_result($r_products, $i, "catalog.status"));
+        $main_image = htmlspecialchars(mysql_result($r_products, $i, "catalog.main_image"));
+        $create_date = htmlspecialchars(mysql_result($r_products, $i, "catalog.create_date"));
+
+        $product_data = array(
+          'id' => $id,
+          'type' => $type,
+          'name' => $name,
+          'description' => $description,
+          'price' => $price,
+          'quan' => $quan,
+          'status' => $status,
+          'main_image' => $main_image,
+          'create_date' => $create_date
+        );
+
+        array_push($products,$product_data);
+        $html .= $this->get_products_html($product_data);
+
+      }
+    }
+
+    $cat_path = array();
+    $cat_path = $this->create_cat_path($parent_id,$cat_path);
+    $cat_path_count = count($cat_path);
+    $cat_path_html = '';
+    if($cat_path_count > 0){
+      $cat_path_html .= '<li onclick="catalog.set_parent_id(0)">Все</li> ';
+    }
+    for ($i = 0; $i < $cat_path_count; $i++) {
+      $active = $cat_path_count - 1 == $i ? 'class="active_map_item"' : '';
+      $js_event = $cat_path_count - 1 != $i ? 'onclick="catalog.set_parent_id('.$cat_path[$i]['id'].')"' : '';
+      $cat_path_html .= '<li '.$active.' '.$js_event.'> / '.$cat_path[$i]['name'].'</li> ';
+    }
+
+
+    $q_products = str_replace($order_by.$sql_limit,"",$q_products);
+    $r_products = mysql_query($q_products) or die("cant execute query");
+    $count_all_items = mysql_numrows($r_products); // or die("cant get numrows query");
+
+    $pages_html = $this->get_pages_buttons($page,$count_all_items,$goods_per_page);
+
+    return array(
+      'html' => $html,
+      'products' => $products,
+      'pages_html' => $pages_html,
+      'cat_path' => $cat_path,
+      'cat_path_html' => $cat_path_html
+    );
   }
 
   public function get_product_info($item_id){
