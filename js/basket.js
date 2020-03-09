@@ -1,6 +1,56 @@
 var basket = {
   url: '/ajax/ajax_basket.php',
   timer: null,
+  checkout: function(){
+    var first_name = $('#co_first_name').val(),
+    last_name = $('#co_last_name').val(),
+    phone = $('#co_phone').val(),
+    country = $('#co_country').val(),
+    state = $('#co_state').val(),
+    city = $('#co_city').val(),
+    address = $('#co_address').val(),
+    zip = $('#co_zip').val(),
+    comment = $('#co_comment').val(),
+    dm_id = $('input[name="dm_item"]:checked').val();
+
+    if(!first_name) return message.show('Введите имя');
+    if(!last_name) return message.show('Введите фамилию');
+    if(!phone) return message.show('Введите телефон');
+    if(!city) return message.show('Укажите город');
+    if(!address) return message.show('Укажите адрес');
+    if(!zip) return message.show('Укажите почтовый индекс');
+
+    $.ajax({
+      url: this.url,
+      method: 'post',
+      dataType:'json',
+      data: {
+        action: 'checkout',
+        first_name: first_name,
+        last_name: last_name,
+        phone: phone,
+        country: country,
+        state: state,
+        city: city,
+        address: address,
+        zip: zip,
+        comment: comment,
+        dm_id: dm_id
+      },
+      success: function(data){
+        if(data.result == 'true'){
+
+        } else{
+          alert(data.string);
+        }
+      },
+      error: function(e){
+        console.log(e);
+      }
+    });
+
+
+  },
   l_change_quan: function(element){
     clearTimeout(this.timer);
     this.timer = setTimeout(function(){

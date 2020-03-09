@@ -2,6 +2,7 @@
 
 if(!class_exists("Auth")) include_once($root_dir.'/include/classes/auth.php');
 if(!class_exists("Catalog")) include_once($root_dir.'/include/classes/catalog.php');
+if(!class_exists("Common")) include_once($root_dir.'/include/classes/common.php');
 if(!class_exists("ProductsOptions")) include_once($root_dir.'/admin/modules/options/products_options.php');
 $product_options = new ProductsOptions();
 
@@ -10,6 +11,107 @@ class Basket extends User{
 
   function __construct(Array $data = array()){
     parent::__construct($data);
+  }
+
+
+  public function checkout($data = array()){
+    $first_name = $data['first_name'];
+    $last_name = $data['last_name'];
+    $phone = $data['phone'];
+    $country = (int)$data['country'];
+    $state = (int)$data['state'];
+    $city = $data['city'];
+    $address = $data['address'];
+    $zip = $data['zip'];
+    $comment = $data['comment'];
+    $dm_id = (int)$data['dm_id'];
+
+    $first_name = mysql_real_escape_string($first_name);
+    $last_name = mysql_real_escape_string($last_name);
+    $phone = mysql_real_escape_string($phone);
+    $city = mysql_real_escape_string($city);
+    $address = mysql_real_escape_string($address);
+    $zip = mysql_real_escape_string($zip);
+    $comment = mysql_real_escape_string($comment);
+
+    if(empty($first_name)) generate_exception('Введите имя');
+    if(empty($last_name)) generate_exception('Введите фамилию');
+    if(empty($phone)) generate_exception('Введите телефон');
+    if(empty($city)) generate_exception('Укажите город');
+    if(empty($address)) generate_exception('Укажите адрес');
+    if(empty($zip)) generate_exception('Укажите почтовый индекс');
+
+    $check_country = Common::get_loc_info($country,'country');
+    if($check_country === false) generate_exception('Выберите страну');
+    $check_state = Common::get_loc_info($state,'state');
+    if($check_state === false) generate_exception('Выберите штат');
+
+    $check_dm = Common::get_dm_info($dm_id);
+    if($check_dm === false) generate_exception('Выберите способ доставки');
+
+    $basket = $this->get_basket();
+    $basket_total_summa = $this->get_total_summa($basket);
+
+    $count_basket = count($basket);
+
+    if($count_basket == 0) generate_exception('Корзина пуста');
+
+    $q_query = ("INSERT INTO
+    `orders`
+    (
+    `user_id`,
+    `delivery_method`,
+    `address1`,
+    `country`,
+    `city`,
+    `state`,
+    `zip`,
+    `comment`,
+    `status`,
+    `create_date`)
+    values(
+    '".$this->user_id."',
+    '".$dm_id."',
+    '".$address."',
+    '".$country."',
+    '".$city."',
+    '".$state."',
+    '".$zip."',
+    '".$comment."',
+    'active',
+    '".$this->create_date."')");
+    mysql_query($q_query) or die(generate_exception(DB_ERROR));
+
+    $order_id = mysql_insert_id();
+
+    foreach ($basket as $key => $item) {
+      $id = $item['id'];
+      $quan = $item['quan'];
+      $price = $item['price'];
+      $total = $price * $quan;
+
+      $q_query = ("INSERT INTO
+      `order_items`
+      (
+      `order_id`,
+      `product_id`,
+      `quan`,
+      `price`,
+      `summa`,
+      `create_date`)
+      values(
+      '".$order_id."',
+      '".$id."',
+      '".$quan."',
+      '".$price."',
+      '".$total."',
+      '".$this->create_date."')");
+      mysql_query($q_query) or die(generate_exception(DB_ERROR));
+
+    }
+
+    $this->clear_basket();
+
   }
 
 
@@ -53,6 +155,23 @@ class Basket extends User{
 
 
     return $basket;
+  }
+
+  public function get_total_summa($basket = array()){
+    $basket = !is_array($basket) ? array() : $basket;
+    if(count($basket) == 0) $basket = $this->get_basket();
+    $total_summa = 0;
+    foreach ($basket as $key => $item) {
+      $quan = $item['quan'];
+      $price = $item['price'];
+      $total_summa += $price * $quan;
+    }
+    return $total_summa;
+  }
+
+  public function clear_basket(){
+    if($this->user_id > 0) return $this->clear_basket_in_db();
+    return $this->clear_basket_in_cookies();
   }
 
   public function add(Array $data = array()){
@@ -154,6 +273,10 @@ class Basket extends User{
     $basket = array_values($basket);
     $basket = serialize($basket);
     setcookie("basket", $basket, time()+3600, '/');
+  }
+
+  public function clear_basket_in_cookies(){
+    return setcookie("basket", "", time()+3600, '/');
   }
 
   public function c_save(Array $data = array()){
@@ -275,6 +398,12 @@ class Basket extends User{
   public function remove_in_db($id){
 
     $q_delete = ("DELETE FROM `basket` WHERE `user_id` = '".$this->user_id."' AND `item_id` = '".$id."'");
+    mysql_query($q_delete) or die(generate_exception(DB_ERROR));
+
+  }
+
+  public function clear_basket_in_db(){
+    $q_delete = ("DELETE FROM `basket` WHERE `user_id` = '".$this->user_id."'");
     mysql_query($q_delete) or die(generate_exception(DB_ERROR));
 
   }

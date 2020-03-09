@@ -20,7 +20,7 @@ if($action == 'add'){
   $basket->add($_POST);
   echo json_encode(array('result' => 'true'));
 } else if($_POST['action'] == 'change_quan'){
-  
+
   $result = $basket->change_quan($_POST);
   echo json_encode(array(
     'result' => 'true',
@@ -28,8 +28,13 @@ if($action == 'add'){
   ));
 
 } else if($_POST['action'] == 'remove'){
+
   $id = (int)$_POST['item_id'];
   $basket->remove($id);
+  echo json_encode(array('result' => 'true'));
+
+} else if($_POST['action'] == 'checkout'){
+  $basket->checkout($_POST);
   echo json_encode(array('result' => 'true'));
 }
 

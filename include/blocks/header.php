@@ -24,6 +24,7 @@ $init_basket = new Basket(array(
   <link rel="stylesheet" href="/css/main.css">
   <link rel="stylesheet" href="/css/font-awesome.min.css" />
   <link rel="stylesheet" href="/css/product.css">
+  <link rel="stylesheet" href="/css/basket.css">
   <script src="/js/basket.js?ver=<?php echo rand(1,100000000); ?> " charset="utf-8"></script>
   <script src="/js/jquery.js" charset="utf-8"></script>
 </head>
