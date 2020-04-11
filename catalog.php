@@ -7,6 +7,8 @@ if(!class_exists('ProductsOptions')) include($root_dir.'/admin/modules/options/p
 $init_options = new ProductsOptions();
 $init_catlog = new Catalog();
 
+$page = (int)$_GET['page'];
+$page = $page <= 0 ? 1 : $page;
 $parent_id = (int)$_GET['parent_id'];
 $selected_options = isset($_GET['options']) ? $_GET['options'] : '';
 $arr_selected_options = explode(',',$selected_options);
@@ -20,6 +22,7 @@ $catalogs_info = $init_catlog->get_catalogs(array(
 ));
 
 $products_info = $is_last_cat > 0 ? $init_catlog->get_products(array(
+  'page' => $page,
   'parent_id' => $parent_id,
   'options' => $selected_options
 )) : false;
@@ -30,80 +33,13 @@ $properts = $init_options->get_properts();
 $products = $products_info !== false ? $products_info['products'] : array();
 $catalogs = $catalogs_info['catalogs'];
 $count_products = count($products);
+$count_all_products = (int)$products_info['count_all_products'];
 $count_catalogs = count($catalogs);
 $products_html = $products_info['html'];
 $cat_path_html = $catalogs_info['cat_path_html'];
 $cat_tree_html = $catalogs_info['tree_html'];
+$pages_html = $products_info['pages_html'];
 ?>
-
-<style media="screen">
-  .mc_left_grid{
-    width: 300px;
-  }
-  .mc_right_grid{
-    width: 980px;
-    padding-left: 10px;
-  }
-  .catalog{
-    background: #f8f8f8;
-  }
-  .child_catalog_list{
-    display: none;
-  }
-  .catalog_header{
-    padding: 10px;
-    background: #1e3352;
-    text-transform: uppercase;
-  }
-  .catalog_wrap{
-    border: 1px solid #e1e1e1;
-  }
-  .cl_item a{
-    display: block;
-    color: #1C1C1C;
-    padding: 12px 20px 12px 10px;
-
-  }
-  .cl_item + .cl_item{
-    border-top: 1px solid #e1e1e1;
-  }
-  .child_catalog_list > .cl_item{
-    border-top: 1px solid #e1e1e1;
-    padding-left: 10px;
-  }
-  .child_catalog_list > .cl_item > a{
-  }
-  .active_cl_item{
-    color: #1e3352!important;
-  }
-  .cl_arrow{
-    right: 0px;
-    top: 0px;
-    bottom: 0px;
-    margin: auto;
-    height: 18px;
-    width: 30px;
-    text-align: center;
-    transition: all .2s ease;
-  }
-  .cl_arrow > .fa{
-    font-size: 16px;
-  }
-  .list-group{
-    margin: 0px;
-  }
-  .breadcrumb li a{
-    color: #656a6e;
-  }
-  .breadcrumb .active{
-    color: #1e3352!important;
-  }
-  .breadcrumb{
-    background: #fff;
-    padding-top: 0px;
-    padding-bottom: 0px;
-  }
-</style>
 <div class="row">
   <div class="col-md-12">
     <div class="row">
@@ -124,30 +60,6 @@ $cat_tree_html = $catalogs_info['tree_html'];
         </ul>
       </div>
     </div>
-    <style media="screen">
-      .param_item{
-        width: 12.5%;
-        padding: 3px;
-        background: #f8f8f8;
-        margin: 3px;
-        border-radius: 50%;
-        border: 1px solid #e1e1e1;
-        font-size: 12.5px;
-        line-height: 29px;
-        min-height: 37px;
-      }
-      .active_param_item{
-        box-shadow: inset 1px 1px 1px 1px #444444, inset -1px -1px 1px 1px #444444;
-      }
-      .param_item span{
-        /* display: block; */
-      }
-      .params_{
-        margin: -3px;
-      }
-    </style>
-
-
     <?php
     if($parent_id > 0 && $is_last_cat > 0){
       foreach ($properts as $key => $value) {
@@ -186,51 +98,9 @@ $cat_tree_html = $catalogs_info['tree_html'];
 
   </div>
   <div class="col-md-9">
-
-    <style media="screen">
-      .product, .b_catalog{
-        margin-bottom: 15px;
-      }
-      .catalog_img{
-        height: 210px;
-      }
-      .product_body{
-        margin-top: 10px;
-      }
-      .catalog_title{
-        color: #2e3133;
-      }
-      .product_img{
-        height: 260px;
-      }
-      .product_img img{
-        width: 100%;
-        height: 100%;
-        object-fit: cover;
-      }
-      .product_price{
-        color: #1e3352;
-        font-size: 16px;
-        font-weight: 500;
-        margin-bottom: 10px;
-      }
-      .p_old_price{
-        font-size: 0.90rem;
-        color: #656a6e;
-        text-decoration: line-through;
-        margin-right: 5px;
-      }
-      .card-img-top{
-        display: block;
-        width: auto;
-        height: 200px;
-        margin: auto;
-      }
-    </style>
-
     <div class="d-flex flex-row align-items-end">
       <div class="mr-auto">
-        Товров: 4
+        Товров: <span id="count_all_products"><?php echo $count_all_products; ?></span>
       </div>
       <div class="ml-auto">
         <select class="form-control" id="catalog_sort_by" onchange="catalog.pick_sort_by(this.value)" name="">
@@ -277,28 +147,20 @@ $cat_tree_html = $catalogs_info['tree_html'];
       ?>
     </div>
 
-    <div>
-      <ul class="pagination justify-content-end">
-        <li class="page-item">
-          <a class="page-link" href="#" aria-label="Previous">
-            <span aria-hidden="true">&laquo;</span>
-          </a>
-        </li>
-        <li class="page-item active"><a class="page-link" href="#">1</a></li>
-        <li class="page-item"><a class="page-link" href="#">2</a></li>
-        <li class="page-item"><a class="page-link" href="#">3</a></li>
-        <li class="page-item"><a class="page-link" href="#">4</a></li>
-        <li class="page-item"><a class="page-link" href="#">5</a></li>
-        <li class="page-item">
-          <a class="page-link" href="#" aria-label="Next">
-            <span aria-hidden="true">&raquo;</span>
-          </a>
-        </li>
-      </ul>
+    <div class="pages_bar" id="pages_bar">
+      <?php echo $pages_html; ?>
     </div>
 
   </div>
 </div>
+
+<?php
+echo '<div id="catalog_info" data-info=\'{';
+  echo '"page": "'.$page.'",';
+  echo '"parent_id": "'.$parent_id.'",';
+  echo '"selected_options": "'.$selected_options.'"';
+echo '}\'></div>';
+?>
 
 <script type="text/javascript">
   function get_child_cats(event,element,id){
@@ -312,9 +174,10 @@ $cat_tree_html = $catalogs_info['tree_html'];
       $('#child_cats_' + id).animate({height:'hide'},200);
     }
   }
+  $(document).ready(function(){
+    catalog.init();
+  });
 </script>
-
-
 
 <?php
 include($root_dir.'/include/blocks/footer.php');

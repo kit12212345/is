@@ -20,6 +20,38 @@ class ProductsOptions extends Options{
     $this->create_date = gmdate('Y-m-d H:i:s');
   }
 
+  public static function set_catalog_options($catalog_id,$product_id,$option_id = fasle){
+
+    if($option_id === false){
+
+      $q_update = ("UPDATE `catalog_options` SET `catalog_id` = '".$catalog_id."' WHERE `product_id`='".$product_id."'");
+      mysql_query($q_update) or die(generate_exception(DB_ERROR));
+
+
+    } else{
+
+      $q_check_opt = ("SELECT `id` FROM `catalog_options`
+      WHERE `catalog_id` = '".$catalog_id."' AND `product_id` = '".$product_id."' AND `option_id` = '".$option_id."'");
+      $r_check_opt = mysql_query($q_check_opt) or die(DB_ERROR);
+      $n_check_opt = mysql_numrows($r_check_opt); // or die("cant get numrows query");
+      if($n_check_opt > 0) return false;
+
+      $q_query = ("INSERT INTO `catalog_options`
+      (`catalog_id`,
+      `product_id`,
+      `option_id`)
+       values
+       ('".$catalog_id."',
+       '".$product_id."',
+        '".$option_id."'".")");
+      mysql_query($q_query) or die(generate_exception(DB_ERROR));
+
+    }
+
+
+    return true;
+  }
+
   public function exists_product($product_id){
     $q_exist = ("SELECT `id` FROM `catalog` WHERE `id` = '".$product_id."'");
     $r_exist = mysql_query($q_exist) or die(DB_ERROR);

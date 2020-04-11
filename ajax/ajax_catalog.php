@@ -18,11 +18,15 @@ if($action == 'get_products'){
 
   $products = $products_info !== false ? $products_info['products'] : array();
   $count_products = count($products);
+  $count_all_products = $products_info['count_all_products'];
   $products_html = $products_info['html'];
+  $pages_html = $products_info['pages_html'];
 
   echo json_encode(array(
     'result' => 'true',
+    'pages_html' => $pages_html,
     'count_products' => $count_products,
+    'count_all_products' => $count_all_products,
     'products_html' => $products_html
   ));
 

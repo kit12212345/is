@@ -225,21 +225,7 @@ Class Options extends Property{
           'propert_color' => $propert_color
         ));
 
-
-
-        $q_check_opt = ("SELECT `id` FROM `catalog_options`
-        WHERE `catalog_id` = '".$parent_id."' AND `option_id` = '".$item_id."'");
-        $r_check_opt = mysql_query($q_check_opt) or die(DB_ERROR);
-        $n_check_opt = mysql_numrows($r_check_opt); // or die("cant get numrows query");
-        if($n_check_opt > 0) continue;
-
-        $q_query = ("INSERT INTO `catalog_options`
-        (`catalog_id`,
-        `option_id`)
-         values
-         ('".$parent_id."',
-          '".$item_id."'".")");
-        mysql_query($q_query) or die(generate_exception(DB_ERROR));
+        ProductsOptions::set_catalog_options($parent_id,$product_id,$item_id);
 
 
       }

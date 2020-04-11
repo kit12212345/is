@@ -32,7 +32,6 @@ foreach ($allowed_properts as $key => $value) {
 ?>
 <script type="text/javascript">
     $(document).ready(function(){
-      // $('#product_main_image').zoom({url: 'photo-big.jpg'});
       $('#product_main_image')
       .wrap('<span style="display:inline-block"></span>')
       .css('display', 'block')
@@ -68,13 +67,6 @@ foreach ($allowed_properts as $key => $value) {
     <div class="vp_info_item vp_price">
       <strong>$<?php echo $product_info['price']; ?></strong>
     </div>
-    <style media="screen">
-      .disabled_opt_item{
-        background: linear-gradient(to top right, transparent 0%, transparent calc(50% - 1px), #b5b5b5 50%, transparent calc(50% + 1px), transparent 100%);
-        background-color: #f5f5f5;
-        cursor: not-allowed;
-      }
-    </style>
 
     <?php
     foreach ($properts as $key => $value) {
@@ -212,13 +204,9 @@ echo '<div id="properts_object" data-info=\'{';
           $z = $i == $count_product_options - 1 ? '' : ',';
 
           echo '}'.$z;
-
-
       }
-
       echo '}';
 echo '}\'></div>';
-
 ?>
 
 <script type="text/javascript">
@@ -271,7 +259,6 @@ $(document).ready(function(){
       }
     }
   }
-
 
 });
 

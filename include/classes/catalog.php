@@ -1,4 +1,6 @@
 <?php
+if(!class_exists("ProductsOptions")) include($root_dir.'/admin/modules/options/products_options.php');
+
 class Catalog{
   public $create_date;
   public $goods_per_page = 25;
@@ -174,6 +176,7 @@ class Catalog{
   }
 
   public function get_products($data = array()){
+    $this->goods_per_page = 28;
     $html = '';
 
     $parent_id = (int)$data['parent_id'];
@@ -182,9 +185,8 @@ class Catalog{
     $sort_by = $data['sort_by'];
     $page = (int)$data['page'];
     $options = isset($data['options']) ? $data['options'] : '';
-    $goods_per_page = (int)$data['goods_per_page'];
 
-    $goods_per_page = $goods_per_page <= 0 ? $this->goods_per_page : $goods_per_page;
+    $goods_per_page = $this->goods_per_page;
     $page = $page <= 0 ? 1 : $page;
     $search_str = mysql_real_escape_string($search_str);
 
@@ -320,13 +322,14 @@ class Catalog{
     $r_products = mysql_query($q_products) or die("cant execute query");
     $count_all_items = mysql_numrows($r_products); // or die("cant get numrows query");
 
-    $pages_html = $this->get_pages_buttons($page,$count_all_items,$goods_per_page);
+    $pages_html = $this->get_products_pages_buttons($page,$count_all_items,$goods_per_page);
 
     return array(
       'html' => $html,
       'products' => $products,
       'pages_html' => $pages_html,
       'cat_path' => $cat_path,
+      'count_all_products' => $count_all_items,
       'cat_path_html' => $cat_path_html
     );
   }
@@ -478,6 +481,65 @@ class Catalog{
       }
     }
     return $html;
+  }
+
+
+  public function get_products_pages_buttons($page,$count_items,$goods_per_page){
+    $pages_html = '';
+    $page_count = 0;
+    if (0 === $count_items) {
+    } else {
+      $page_count = (int)ceil($count_items / $goods_per_page);
+      if($page > $page_count) {
+        $page = 1;
+      }
+    }
+
+
+    $max_pages_nav=10;
+    $center_pos=ceil($max_pages_nav/2);
+    $center_offset=round($max_pages_nav/2);
+
+    if($page_count>1){
+      if($page>$center_pos) $start_page_count=$page-2;
+      else  $start_page_count=1;
+      $end_page_count=$start_page_count+($max_pages_nav-1);
+      if($end_page_count>$page_count){
+        $end_page_count=$page_count;
+        $start_page_count=$page_count-($max_pages_nav-1);
+      }
+
+      if ($start_page_count<1) $start_page_count=1;
+
+
+      $pages_html .= '<ul class="pagination justify-content-end">';
+      if ($page!=1){
+        $pages_html .= '<li class="page-item">';
+        $pages_html .= '<a class="page-link" onclick="catalog.switch_page('.($page-1).');" aria-label="Previous">';
+        $pages_html .= '<span aria-hidden="true">&laquo;</span>';
+        $pages_html .= '</a>';
+        $pages_html .= '</li>';
+      }
+      for ($i = $start_page_count; $i <= $end_page_count; $i++) {
+        if($page_count <= 1) continue;
+        if ($i === $page) {
+          $pages_html .= '<li class="page-item active"><a class="page-link">'.$i.'</a></li>';
+        } else {
+          $pages_html .= '<li class="page-item"><a class="page-link" onclick="catalog.switch_page('.$i.');">'.$i.'</a></li>';
+        }
+      }
+      if ($page!=$page_count){
+        $pages_html .= '<li class="page-item">';
+        $pages_html .= '<a class="page-link" onclick="catalog.switch_page('.($page-1).');" aria-label="Next">';
+        $pages_html .= '<span aria-hidden="true">&raquo;</span>';
+        $pages_html .= '</a>';
+        $pages_html .= '</li>';
+      }
+      $pages_html .= '</ul>';
+    }
+
+    return $pages_html;
+
   }
 
 
@@ -753,6 +815,8 @@ class Catalog{
       `parent_id` = '".$parent_id."'
       WHERE `id`='".$product_id."'");
       mysql_query($update) or die("cant execute update set_deleted");
+
+      ProductsOptions::set_catalog_options($parent_id,$product_id,false);
 
     } else{
 

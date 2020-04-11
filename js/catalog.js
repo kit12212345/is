@@ -1,7 +1,12 @@
 var catalog = {
-  parent_id: 6,
+  current_page: 1,
+  parent_id: 0,
+  selected_options: "",
   init: function(){
-
+    var catalog_info = $('#catalog_info').data('info');
+    this.current_page = catalog_info.page;
+    this.parent_id = catalog_info.parent_id;
+    this.selected_options = catalog_info.selected_options;
   },
   get_active_options: function(){
     var options = [];
@@ -31,6 +36,13 @@ var catalog = {
     } else remove_url_param('sort_by');
     return this.get_products();
   },
+  switch_page: function(page){
+    this.current_page = page;
+    if(page > 1) set_url_param('page',page);
+    else remove_url_param('page');
+    $('html').animate({scrollTop:0}, 450);
+    return this.get_products();
+  },
   get_products: function(){
     var active_options = this.get_active_options();
     var sort_by = $('#catalog_sort_by').val();
@@ -40,12 +52,15 @@ var catalog = {
       dataType: 'json',
       data: {
         action: 'get_products',
+        page: this.current_page,
         parent_id: this.parent_id,
         sort_by: sort_by,
         options: active_options.toString()
       },
       success: function(data){
         if(data.result == 'true'){
+          $('#count_all_products').text(data.count_all_products);
+          $('#pages_bar').html(data.pages_html);
           $('#products_wrap').html(data.products_html);
           console.log(data);
         } else{

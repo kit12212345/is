@@ -64,6 +64,7 @@ var basket = {
     var is_remove = $(element).hasClass('active_opt');
 
     $('.opt_item').addClass('disabled_opt_item');
+    $('.opt_item').attr('onclick','');
 
     if(!$(element).hasClass('active_opt')){
       $('#opt_' + propert_id + '_' + option_id).removeClass('disabled_opt_item');
@@ -71,6 +72,7 @@ var basket = {
       for (var prop in allowed[propert_id][option_id]) {
         for (var i = 0; i < allowed[propert_id][option_id][prop].length; i++) {
           $('#opt_' + prop + '_' + allowed[propert_id][option_id][prop][i]).removeClass('disabled_opt_item');
+          $('#opt_' + prop + '_' + allowed[propert_id][option_id][prop][i]).attr('onclick','basket.pick_option(this);');
         }
       }
 
@@ -91,28 +93,27 @@ var basket = {
 
           for (var prop in allowed[i_propert_id][i_option_id]) {
             for (var i = 0; i < allowed[i_propert_id][i_option_id][prop].length; i++) {
-              console.log($('#opt_' + prop + '_' + allowed[i_propert_id][i_option_id][prop][i]));
               $('#opt_' + prop + '_' + allowed[i_propert_id][i_option_id][prop][i]).removeClass('disabled_opt_item');
-
+              $('#opt_' + prop + '_' + allowed[i_propert_id][i_option_id][prop][i]).attr('onclick','basket.pick_option(this);');
             }
           }
-
         }
 
         $('.active_opt').removeClass('disabled_opt_item');
+        $('.active_opt').attr('onclick','basket.pick_option(this);');
 
       } else{
         for (var val in options) {
 
           for (var item__id in options[val]['items']) {
             $('.item_opt_' + options[val]['items'][item__id]['id']).removeClass('disabled_opt_item');
+            $('.item_opt_' + options[val]['items'][item__id]['id']).attr('onclick','basket.pick_option(this);');
           }
 
         }
       }
-
-
     }
+    $('.active_opt').attr('onclick','basket.pick_option(this);');
 
   },
   get_selected_options: function(){

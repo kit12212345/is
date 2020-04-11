@@ -134,3 +134,17 @@ input[type="number"]{ -moz-appearance: textfield; }
 .def_lists ul li{
   list-style: disc;
 }
+.list-group{
+  margin: 0px;
+}
+.breadcrumb li a{
+  color: #656a6e;
+}
+.breadcrumb .active{
+  color: #1e3352!important;
+}
+.breadcrumb{
+  background: #fff;
+  padding-top: 0px;
+  padding-bottom: 0px;
+}
