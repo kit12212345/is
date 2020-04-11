@@ -98,6 +98,7 @@ var catalog = {
     description = $('#product_description').val(),
     price = $('#product_price').val(),
     quan = $('#product_quan').val(),
+    parent_id = $('#parent_id').val(),
     image_hash = $('#md5_hash').val();
 
     $.ajax({
@@ -110,6 +111,7 @@ var catalog = {
         product_id: this.current_product_id,
         description: description,
         price: price,
+        parent_id: parent_id,
         image_hash: image_hash,
         quan: quan
       },
@@ -117,10 +119,12 @@ var catalog = {
         if(data.result == 'true'){
           window.location.reload();
         } else{
+          preload_page(false);
           alert(data.string);
         }
       },
       error: function(err){
+        preload_page(false);
         console.log(err);
       }
     });

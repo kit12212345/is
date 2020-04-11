@@ -60,10 +60,60 @@ var basket = {
   pick_option: function(element){
     var propert_id = $(element).data('propertid');
     var option_id = $(element).data('optid');
-    show_p(propert_id,option_id);
 
-    $('#vp_propert_' + propert_id).children('.opt_item').removeClass('active_opt');
-    return $(element).addClass('active_opt');
+    var is_remove = $(element).hasClass('active_opt');
+
+    $('.opt_item').addClass('disabled_opt_item');
+
+    if(!$(element).hasClass('active_opt')){
+      $('#opt_' + propert_id + '_' + option_id).removeClass('disabled_opt_item');
+
+      for (var prop in allowed[propert_id][option_id]) {
+        for (var i = 0; i < allowed[propert_id][option_id][prop].length; i++) {
+          $('#opt_' + prop + '_' + allowed[propert_id][option_id][prop][i]).removeClass('disabled_opt_item');
+        }
+      }
+
+      $('#vp_propert_' + propert_id).children('.opt_item').removeClass('active_opt');
+      $(element).addClass('active_opt');
+
+    } else{
+      $(element).removeClass('active_opt');
+
+      var count_active_options = $('.active_opt').length;
+
+      if(count_active_options > 0){
+
+        for (var i = 0; i < $('.active_opt').length; i++) {
+          var item = $('.active_opt').eq(i);
+          var i_propert_id = $(item).data('propertid');
+          var i_option_id = $(item).data('optid');
+
+          for (var prop in allowed[i_propert_id][i_option_id]) {
+            for (var i = 0; i < allowed[i_propert_id][i_option_id][prop].length; i++) {
+              console.log($('#opt_' + prop + '_' + allowed[i_propert_id][i_option_id][prop][i]));
+              $('#opt_' + prop + '_' + allowed[i_propert_id][i_option_id][prop][i]).removeClass('disabled_opt_item');
+
+            }
+          }
+
+        }
+
+        $('.active_opt').removeClass('disabled_opt_item');
+
+      } else{
+        for (var val in options) {
+
+          for (var item__id in options[val]['items']) {
+            $('.item_opt_' + options[val]['items'][item__id]['id']).removeClass('disabled_opt_item');
+          }
+
+        }
+      }
+
+
+    }
+
   },
   get_selected_options: function(){
     var selected_options = [];

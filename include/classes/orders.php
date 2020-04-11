@@ -240,8 +240,6 @@ class Orders extends Catalog{
           $html .= '<div class="clear"></div>';
         $html .= '</div>';
         $html .= '</div>';
-      $html .= '</div>';
-    $html .= '</div>';
     return $html;
   }
 

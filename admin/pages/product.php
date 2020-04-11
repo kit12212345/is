@@ -6,10 +6,10 @@ include_once($root_dir.'/include/classes/catalog.php');
 $item_id = isset($_GET['item_id']) ? (int)$_GET['item_id'] : 0;
 
 $uploader_table_name = 'user_recipes_images';
+$catalog = new Catalog();
 
 if($item_id > 0){
 
-  $catalog = new Catalog();
 
   $product_info = $catalog->get_product_info($item_id);
 
@@ -18,12 +18,14 @@ if($item_id > 0){
     $description = $product_info['description'];
     $price = $product_info['price'];
     $quan = $product_info['quan'];
+    $parent_id = $product_info['parent_id'];
 
     $uploader_table_name = 'catalog_images';
 
   }
 }
 
+$tree_cats = $catalog->get_tree_cats($parent_id);
 
 $uploader = new Uploader(array(
   'table_name' => $uploader_table_name,
@@ -161,39 +163,9 @@ $(document).ready(function(){
       </div>
       <div class="panel-body padd_ten">
         <div class="">
-          <div class="map_items" id="product_map_items">
-
-            <?php
-
-            if($count_product_path > 0){
-              echo '<ul>';
-
-              echo '<li>Все</li>';
-
-              for ($i = 0; $i < $count_product_path; $i++) {
-
-                $cat_id = $product_path[$i]['id'];
-                $cat_name = $product_path[$i]['name'];
-
-                $active_class = $count_product_path - 1 == $i ? 'active_map_item' : '';
-
-                echo '<li class="'.$active_class.'"> / '.$cat_name.'</li>';
-
-              }
-
-              echo '</ul>';
-
-            } else{
-              echo '<div class="not_product_cat">';
-                echo '<strong> - Не выбрана</strong>';
-              echo '</div>';
-            }
-
-            ?>
-          </div>
-        </div>
-        <div class="text_right">
-          <div class="btn btn-xs bg-brown" onclick="products.get_cats(products.current_parent_id);" style="padding: 3px 10px;">Выбрать категорию</div>
+          <select class="form-control" id="parent_id" name="">
+            <?php echo $tree_cats ?>
+          </select>
         </div>
       </div>
     </div>

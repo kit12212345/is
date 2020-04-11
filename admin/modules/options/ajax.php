@@ -4,7 +4,6 @@ header('Content-Type: application/json');
 $root_dir = $_SERVER['DOCUMENT_ROOT'];
 include_once($root_dir.'/db_connect.php');
 
-include_once($root_dir.'/admin/include/functions.php');
 require_once($root_dir.'/admin/modules/options/products_options.php');
 
 

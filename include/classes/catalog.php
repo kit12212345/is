@@ -99,49 +99,32 @@ class Catalog{
 
   }
 
-  public function get_products($data = array()){
-    $html = '';
+
+  public function get_catalogs($data = array()){
 
     $parent_id = (int)$data['parent_id'];
-    $search_str = $data['search_str'];
-    $search_by = $data['search_by'];
-    $page = (int)$data['page'];
-    $goods_per_page = (int)$data['goods_per_page'];
-
-    $goods_per_page = $goods_per_page <= 0 ? $this->goods_per_page : $goods_per_page;
-    $page = $page <= 0 ? 1 : $page;
-    $search_str = mysql_real_escape_string($search_str);
-
-    $search_field = 'name';
-
-    if($search_by == 'by_code') $search_field = 'id';
-
-    $query_search = !empty($search_str) ? " AND `catalog`.`".$search_field."` LIKE '%".$search_str."%'" : "";
 
     $order_by = " ORDER BY `catalog`.`name` ASC";
 
-    $offset = ($page - 1) * $goods_per_page;
-    $sql_limit = " LIMIT " . $offset . "," .  $goods_per_page;
 
+    $catalogs = array();
+    $q_catalogs = ("SELECT * FROM `catalog` WHERE `catalog`.`deleted` = '0' AND `catalog`.`type` = 'catalog'
+    AND `catalog`.`parent_id` = '".$parent_id."' ".$order_by);
+    $r_catalogs = mysql_query($q_catalogs) or die("cant execute query");
+    $n_catalogs = mysql_numrows($r_catalogs); // or die("cant get numrows query");
+    if($n_catalogs > 0){
+      for ($i = 0; $i < $n_catalogs; $i++) {
+        $id = htmlspecialchars(mysql_result($r_catalogs, $i, "catalog.id"));
+        $type = htmlspecialchars(mysql_result($r_catalogs, $i, "catalog.type"));
+        $name = htmlspecialchars(mysql_result($r_catalogs, $i, "catalog.name"));
+        $description = htmlspecialchars(mysql_result($r_catalogs, $i, "catalog.description"));
+        $price = htmlspecialchars(mysql_result($r_catalogs, $i, "catalog.price"));
+        $quan = htmlspecialchars(mysql_result($r_catalogs, $i, "catalog.quan"));
+        $status = htmlspecialchars(mysql_result($r_catalogs, $i, "catalog.status"));
+        $main_image = htmlspecialchars(mysql_result($r_catalogs, $i, "catalog.main_image"));
+        $create_date = htmlspecialchars(mysql_result($r_catalogs, $i, "catalog.create_date"));
 
-    $products = array();
-    $q_products = ("SELECT * FROM `catalog` WHERE `catalog`.`deleted` = '0' AND `catalog`.`type` = 'product'
-    AND `catalog`.`parent_id` = '".$parent_id."' ".$query_search." ".$order_by.$sql_limit);
-    $r_products = mysql_query($q_products) or die("cant execute query");
-    $n_products = mysql_numrows($r_products); // or die("cant get numrows query");
-    if($n_products > 0){
-      for ($i = 0; $i < $n_products; $i++) {
-        $id = htmlspecialchars(mysql_result($r_products, $i, "catalog.id"));
-        $type = htmlspecialchars(mysql_result($r_products, $i, "catalog.type"));
-        $name = htmlspecialchars(mysql_result($r_products, $i, "catalog.name"));
-        $description = htmlspecialchars(mysql_result($r_products, $i, "catalog.description"));
-        $price = htmlspecialchars(mysql_result($r_products, $i, "catalog.price"));
-        $quan = htmlspecialchars(mysql_result($r_products, $i, "catalog.quan"));
-        $status = htmlspecialchars(mysql_result($r_products, $i, "catalog.status"));
-        $main_image = htmlspecialchars(mysql_result($r_products, $i, "catalog.main_image"));
-        $create_date = htmlspecialchars(mysql_result($r_products, $i, "catalog.create_date"));
-
-        $product_data = array(
+        $data = array(
           'id' => $id,
           'type' => $type,
           'name' => $name,
@@ -153,23 +136,183 @@ class Catalog{
           'create_date' => $create_date
         );
 
-        array_push($products,$product_data);
-        $html .= $this->get_products_html($product_data);
+        array_push($catalogs,$data);
 
       }
     }
+
+
+    $tree_html = $this->get_tree_cats($parent_id,true);
+
 
     $cat_path = array();
     $cat_path = $this->create_cat_path($parent_id,$cat_path);
     $cat_path_count = count($cat_path);
     $cat_path_html = '';
     if($cat_path_count > 0){
-      $cat_path_html .= '<li onclick="catalog.set_parent_id(0)">Все</li> ';
+      $cat_path_html .= '<ol class="breadcrumb">';
+      $cat_path_html .= '<li class="breadcrumb-item"><a href="/catalog.php">Все</a></li>';
+
+      for ($i = 0; $i < $cat_path_count; $i++){
+        $active = $cat_path_count - 1 == $i ? 'class="active"' : '';
+        $href = $cat_path_count - 1 != $i ? 'href="?parent_id='.$cat_path[$i]['id'].'"' : '';
+
+        $cat_path_html .= '<li class="breadcrumb-item">';
+          $cat_path_html .= ' <a '.$active.' '.$href.'>'.$cat_path[$i]['name'].'</a>';
+        $cat_path_html .= '</li>';
+      }
+      $cat_path_html .= '</ol>';
+
     }
-    for ($i = 0; $i < $cat_path_count; $i++) {
-      $active = $cat_path_count - 1 == $i ? 'class="active_map_item"' : '';
-      $js_event = $cat_path_count - 1 != $i ? 'onclick="catalog.set_parent_id('.$cat_path[$i]['id'].')"' : '';
-      $cat_path_html .= '<li '.$active.' '.$js_event.'> / '.$cat_path[$i]['name'].'</li> ';
+
+    return array(
+      'tree_html' => $tree_html,
+      'catalogs' => $catalogs,
+      'cat_path' => $cat_path,
+      'cat_path_html' => $cat_path_html
+    );
+  }
+
+  public function get_products($data = array()){
+    $html = '';
+
+    $parent_id = (int)$data['parent_id'];
+    $search_str = $data['search_str'];
+    $search_by = $data['search_by'];
+    $sort_by = $data['sort_by'];
+    $page = (int)$data['page'];
+    $options = isset($data['options']) ? $data['options'] : '';
+    $goods_per_page = (int)$data['goods_per_page'];
+
+    $goods_per_page = $goods_per_page <= 0 ? $this->goods_per_page : $goods_per_page;
+    $page = $page <= 0 ? 1 : $page;
+    $search_str = mysql_real_escape_string($search_str);
+
+    $order_by = " ORDER BY `catalog`.`name` ASC";
+
+    if(!empty($sort_by) && $sort_by != 'default'){
+      if($sort_by == 'price_high_to_low'){
+        $order_by = 'ORDER BY `price` DESC';
+      } else if($sort_by == 'price_low_to_high'){
+        $order_by = 'ORDER BY `price` ASC';
+      }
+    }
+
+
+
+    $search_field = 'name';
+
+    if($search_by == 'by_code') $search_field = 'id';
+
+    $query_search = !empty($search_str) ? " AND `catalog`.`".$search_field."` LIKE '%".$search_str."%'" : "";
+
+    $query_parent = '';
+
+    $offset = ($page - 1) * $goods_per_page;
+    $sql_limit = " LIMIT " . $offset . "," .  $goods_per_page;
+
+    $query_options = '';
+
+    if(!empty($options)){
+
+      $explode_options = array();
+
+      $q_items = ("SELECT `propert_id`,`parent_propert_id` FROM `shop_options_items` WHERE `propert_id` IN (".$options.") ");
+      $r_items = mysql_query($q_items) or die("cant execute query");
+      $n_items = mysql_numrows($r_items); // or die("cant get numrows query");
+      if($n_items > 0){
+        for ($i = 0; $i < $n_items; $i++) {
+          $option_id = htmlspecialchars(mysql_result($r_items, $i, "propert_id"));
+          $parent_propert_id = htmlspecialchars(mysql_result($r_items, $i, "parent_propert_id"));
+          if(!isset($explode_options[$parent_propert_id])) $explode_options[$parent_propert_id] = array();
+          if(!in_array($option_id,$explode_options[$parent_propert_id])) array_push($explode_options[$parent_propert_id],$option_id);
+        }
+      }
+
+      $keys_parents = array_keys($explode_options);
+      $count_keys_parents = count($keys_parents);
+
+      $query_options .= " AND  `catalog`.`id` IN ";
+      $query_options .= '( SELECT `parent_product_id` FROM `shop_options_items` AS soi WHERE';
+
+      for ($p = 0; $p < count($keys_parents); $p++){
+        $propert_id = (int)$keys_parents[$p];
+        $options_str = join($explode_options[$propert_id],',');
+
+        $query_options .= $p == 0 ? " EXISTS (
+        SELECT `shop_options_items`.`id` FROM `shop_options_items`
+        WHERE `shop_options_items`.`propert_id` IN (".$options_str.") AND `shop_options_items`.`product_id` = soi.product_id)"
+        : " AND EXISTS (
+        SELECT `shop_options_items`.`id` FROM `shop_options_items`
+        WHERE `shop_options_items`.`propert_id` IN (".$options_str.") AND `shop_options_items`.`product_id` = soi.product_id) ";
+
+      }
+
+      $query_options .= ')';
+
+    }
+
+
+    if($parent_id > 0){
+      $query_parent = " AND `catalog`.`parent_id` = '".$parent_id."' ";
+      $q_last_items = ("SELECT `last_items` FROM `catalog` WHERE `id` = '".$parent_id."' ");
+      $r_last_items = mysql_query($q_last_items) or die("cant execute query");
+      $n_last_items = mysql_numrows($r_last_items); // or die("cant get numrows query");
+      if($n_last_items > 0){
+        $last_items = htmlspecialchars(mysql_result($r_last_items, 0, "last_items"));
+      }
+      if(!empty($last_items)) $query_parent = " AND `catalog`.`parent_id` IN (".$last_items.",".$parent_id.") ";
+    }
+
+
+    $products = array();
+    $q_products = ("SELECT
+      DISTINCT `catalog`.`id`,
+      `catalog`.`name`,
+      `catalog`.`price`,
+      `catalog`.`main_image`
+    FROM `catalog` WHERE `catalog`.`deleted` = '0' AND `catalog`.`type` = 'product' ".$query_options."
+     ".$query_search.$query_parent." ".$order_by.$sql_limit);
+    $r_products = mysql_query($q_products) or die($q_products);
+    $n_products = mysql_numrows($r_products); // or die("cant get numrows query");
+    if($n_products > 0){
+      for ($i = 0; $i < $n_products; $i++) {
+        $id = htmlspecialchars(mysql_result($r_products, $i, "catalog.id"));
+        $name = htmlspecialchars(mysql_result($r_products, $i, "catalog.name"));
+        $price = htmlspecialchars(mysql_result($r_products, $i, "catalog.price"));
+        $main_image = htmlspecialchars(mysql_result($r_products, $i, "catalog.main_image"));
+
+        $product_data = array(
+          'id' => $id,
+          'name' => $name,
+          'price' => $price,
+          'main_image' => $main_image,
+        );
+
+        array_push($products,$product_data);
+
+        $image_src = empty($main_image) ? '/images/no_img.png' : '/images/catalog/t_480/'.$main_image;
+
+        $html .= '<div class="col-md-3 product">';
+        $html .= '<a href="/product.php?id='.$id.'" title="'.$name.'">';
+        $html .= '<div class="product_img">';
+        $html .= '<img src="'.$image_src.'" alt="'.$name.'">';
+        $html .= '</div>';
+        $html .= '</a>';
+        $html .= '<div class="product_body">';
+        $html .= '<h4 class="product_title">'.$name.'</h4>';
+        $html .= '<div class="product_price">';
+        // $html .= '<span class="p_old_price">$65</span> ';
+        $html .= ' $'.$price;
+        $html .= '</div>';
+        $html .= '<div class="mt-2">';
+        $html .= '<strong>Бесплатная доставка от 40</strong>';
+        $html .= '</div>';
+        $html .= '</div>';
+        $html .= '</div>';
+
+
+      }
     }
 
 
@@ -200,8 +343,23 @@ class Catalog{
         $price = htmlspecialchars(mysql_result($r_products, 0, "catalog.price"));
         $quan = htmlspecialchars(mysql_result($r_products, 0, "catalog.quan"));
         $parent_id = htmlspecialchars(mysql_result($r_products, 0, "catalog.parent_id"));
+        $last_items = htmlspecialchars(mysql_result($r_products, 0, "catalog.last_items"));
         $main_image = htmlspecialchars(mysql_result($r_products, 0, "catalog.main_image"));
+        $is_last = htmlspecialchars(mysql_result($r_products, 0, "catalog.is_last"));
         $create_date = htmlspecialchars(mysql_result($r_products, 0, "catalog.create_date"));
+
+
+        $catalog_options = array();
+
+        $q_c_options = ("SELECT * FROM `catalog_options` WHERE `catalog_id` = '".$item_id."'");
+        $r_c_options = mysql_query($q_c_options) or die("cant execute query");
+        $n_c_options = mysql_numrows($r_c_options); // or die("cant get numrows query");
+        if($n_c_options > 0){
+          for ($i = 0; $i < $n_c_options; $i++) {
+            $c_option_id = htmlspecialchars(mysql_result($r_c_options, $i, "option_id"));
+            array_push($catalog_options,$c_option_id);
+          }
+        }
 
         $data = array(
           'id' => $id,
@@ -210,6 +368,9 @@ class Catalog{
           'price' => $price,
           'quan' => $quan,
           'parent_id' => $parent_id,
+          'last_items' => $last_items,
+          'is_last' => $is_last,
+          'catalog_options' => $catalog_options,
           'main_image' => $main_image,
           'create_date' => $create_date
         );
@@ -225,7 +386,7 @@ class Catalog{
     mysql_query($q_set_deleted) or die("cant execute update set_deleted");
   }
 
-  public function get_tree_cats($selected_item){
+  public function get_tree_cats($selected_item,$output = fasle){
     $cats = array();
     $html = '';
     $q_cats = ("SELECT * FROM `catalog` WHERE `type` = 'catalog' ORDER BY `position` DESC");
@@ -236,21 +397,67 @@ class Catalog{
         $id = htmlspecialchars(mysql_result($r_cats, $i, "id"));
         $title = htmlspecialchars(mysql_result($r_cats, $i, "name"));
         $parent_id = htmlspecialchars(mysql_result($r_cats, $i, "parent_id"));
+        $last_items = htmlspecialchars(mysql_result($r_cats, $i, "last_items"));
 
         $cats[$parent_id][$id] = array(
           'id' => $id,
           'title' => $title,
+          'last_items' => $last_items,
           'parent_id' => $parent_id
         );
       }
     }
 
+    $selected_item_info = array();
+    if($selected_item > 0){
+      $selected_item_info = $this->get_product_info($selected_item);
+    }
     $this->cats = $cats;
-    $html = $this->create_tree(0,0,$html,$selected_item);
+    if($output === true){
+      $html = $this->create_tree_output(0,$html,$selected_item_info);
+    } else{
+      $html = $this->create_tree(0,0,$html,$selected_item_info);
+    }
     return $html;
   }
 
-  public function create_tree($parent_id,$level,&$html,$selected_item){
+
+  public function create_tree_output($parent_id,&$html,$selected_item_info){
+    $cats = $this->cats;
+    if(isset($cats[$parent_id])){
+      foreach ($cats[$parent_id] as $value) {
+        $id = $value["id"];
+        $name = $value["title"];
+
+        $last_items = $value["last_items"];
+        $arr_last_items = explode(',',$last_items);
+        $is_parent_selected = in_array($selected_item_info['id'],$arr_last_items) || $selected_item_info['id'] == $id;
+
+        $rotate_90 = $is_parent_selected ? 'rotate_90' : '';
+        $display_block = $is_parent_selected ? 'style="display: block"' : '';
+
+        $active_catalog = $selected_item_info['id'] == $id ? 'active_cl_item' : '';
+
+        $html .= '<li class="cl_item">';
+        $html .= '<a class="relative '.$active_catalog.'" href="?parent_id='.$id.'">'.$name.'';
+
+        if(isset($cats[$id])){
+          $html .= '<span onclick="get_child_cats(event,this,'.$id.');" class="absolute cursor_p cl_arrow '.$rotate_90.'"><i class="fa fa-angle-right" aria-hidden="true"></i></span>';
+        }
+        $html .= '</a>';
+
+
+        $html .= '<ul class="list-group catalog_list child_catalog_list" '.$display_block.' id="child_cats_'.$id.'">';
+        $this->create_tree_output($id,$html,$selected_item_info);
+        $html .= '</ul>';
+        $html .= '</li>';
+      }
+    }
+    return $html;
+  }
+
+
+  public function create_tree($parent_id,$level,&$html,$selected_item_info){
     $line = '-';
     $cats = $this->cats;
     if(isset($cats[$parent_id])) {
@@ -262,11 +469,11 @@ class Catalog{
           $gline .= $line;
         }
 
-        $selected = $selected_item == $value["id"] ? 'selected="selected"' : '';
+        $selected = $selected_item_info['id'] == $value["id"] ? 'selected="selected"' : '';
 
         $html .= '<option value="'.$value["id"].'" '.$selected.'>'.$gline.' '.$value["title"].'</option>';
         $level++;
-        $this->create_tree($value["id"], $level,$html,$selected_item);
+        $this->create_tree($value["id"], $level,$html,$selected_item_info);
         $level--;
       }
     }
@@ -469,6 +676,36 @@ class Catalog{
 
     }
 
+    $this->reindex_cats();
+
+  }
+
+  public function reindex_cats(){
+    $cat_arr = array();
+
+    $q_query_path = ("SELECT * FROM `catalog` WHERE `type` = 'catalog'");
+    $r_query_path = mysql_query($q_query_path) or die(generate_exception(DB_ERROR));
+    $n_query_path = mysql_numrows($r_query_path); // or die("cant get numrows query_path");
+    if ($n_query_path > 0) {
+      for ($i = 0; $i < $n_query_path; $i++) {
+        $id = htmlspecialchars(mysql_result($r_query_path, $i, "id"));
+        $name = htmlspecialchars(mysql_result($r_query_path, $i, "name"));
+
+        $q_is_last = ("SELECT * FROM `catalog` WHERE `type` = 'catalog' AND `catalog`.`parent_id` = '".$id."'");
+        $r_is_last = mysql_query($q_is_last) or die(generate_exception(DB_ERROR));
+        $exists_cats = mysql_numrows($r_is_last); // or die("cant get numrows query_path");
+        $is_last = $exists_cats > 0 ? 0 : 1;
+
+        $update = ("UPDATE `catalog` SET `is_last`='".$is_last."' WHERE `id`='".$id."'");
+        mysql_query($update) or die("cant execute update set_deleted");
+
+      }
+    }
+
+
+
+
+
   }
 
   public function create_cat_path($item_id,&$path){
@@ -494,11 +731,17 @@ class Catalog{
     $price = $data['price'];
     $quan = $data['quan'];
     $image_hash = $data['image_hash'];
+    $parent_id = $data['parent_id'];
 
     $name = mysql_real_escape_string($name);
     $description = mysql_real_escape_string($description);
     $price = mysql_real_escape_string($price);
     $quan = mysql_real_escape_string($quan);
+
+    $q_last_parent_id = ("SELECT * FROM `catalog` WHERE `parent_id` = '".$parent_id."' AND `type` = 'catalog'");
+    $r_last_parent_id = mysql_query($q_last_parent_id) or die(generate_exception($db_error));
+    $is_last_parent_id = mysql_numrows($r_last_parent_id); // or die("cant get numrows query");
+    if($is_last_parent_id > 0) generate_exception('Выберите последний каталог');
 
     if($product_id > 0){
 
@@ -507,6 +750,7 @@ class Catalog{
       `description` = '".$description."',
       `price` = '".$price."',
       `quan` = '".$quan."',
+      `parent_id` = '".$parent_id."'
       WHERE `id`='".$product_id."'");
       mysql_query($update) or die("cant execute update set_deleted");
 
@@ -520,6 +764,7 @@ class Catalog{
       `description`,
       `price`,
       `quan`,
+      `parent_id`,
       `create_date`)
       values(
       '".$name."',
@@ -527,6 +772,7 @@ class Catalog{
       '".$description."',
       '".$price."',
       '".$quan."',
+      '".$parent_id."',
       '".$this->create_date."')");
       mysql_query($q_query) or die(generate_exception(DB_ERROR));
 

@@ -12,96 +12,175 @@ $init_catlog = new Catalog();
 
 $allowed_properts = $init_options->get_allowed_properts($product_id);
 
+$properts = $init_options->get_properts();
 $product_info = $init_catlog->get_product_info($product_id);
 $product_options = $init_options->get_options($product_id,$allowed_properts);
 $count_product_options = count($product_options);
-
 $name = $product_info['name'];
 $description = $product_info['description'];
 $main_image = $product_info['main_image'];
 
-?>
-
-<div class="float_l vp_left_grid">
-  <div class="vp_image">
-    <div class="float_l product_images">
-      <div class="ltl_img">
-        <img src="/images/leo.jpg" alt="">
-      </div>
-      <div class="ltl_img">
-        <img src="/images/leo.jpg" alt="">
-      </div>
-      <div class="ltl_img">
-        <img src="/images/leo.jpg" alt="">
-      </div>
-    </div>
-    <div class="float_l product_main_image">
-      <img src="/images/leo.jpg" alt="">
-    </div>
-  </div>
-</div>
-<div class="float_r vp_right_grid">
-  <div class="vp_info_item vp_name">
-    <h1><?php echo $product_info['name']; ?></h1>
-  </div>
-  <div class="vp_info_item vp_price">
-    <strong>$<?php echo $product_info['price']; ?></strong>
-  </div>
-
-
-  <?php
-  foreach ($allowed_properts as $key => $value) {
-    echo '<div class="vp_info_item">';
-      echo '<strong>'.$value.':</strong>';
-      echo '<div id="vp_propert_'.$key.'">';
-      $priv_items = array();
-      for ($i = 0; $i < $count_product_options; $i++) {
-        $opts = $product_options[$i]['options'][$key];
-        if(in_array($opts['id'],$priv_items)) continue;
-        array_push($priv_items,$opts['id']);
-        // $active_opt = $i == 0 ? 'active_opt' : '';
-        $element_id = 'id="opt_'.$key.'_'.$opts['id'].'"';
-        echo '<div onclick="basket.pick_option(this);" '.$element_id.' data-propertid="'.$key.'" data-optid="'.$opts['id'].'" class="float_l item_prop_'.$key.' item_opt_'.$opts['id'].' opt_item '.$active_opt.'">';
-        echo !empty($opts['color']) ? '<div class="opt_backr" style="background: '.$opts['color'].'"></div>' : '<div class="opt_text text_center">'.$opts['name'].'</div>';
-        echo '</div>';
-      }
-      echo '</div>';
-      echo '<div class="clear"></div>';
-    echo '</div>';
+$allowed_options = array();
+foreach ($allowed_properts as $key => $value) {
+  for ($i = 0; $i < $count_product_options; $i++) {
+    $opts = $product_options[$i]['options'][$key];
+    if(in_array($opts['id'],$allowed_options)) continue;
+    array_push($allowed_options,$opts['id']);
   }
-  ?>
+}
 
-  <div class="vp_info_item" style="margin-top: 15px;">
-    <table class="text_center basket_btns i_block v_align_middle">
-      <tbody>
-        <tr>
-          <td>
-            <div onclick="basket.spl_update_quan(this);" data-itemid="<?php echo $product_id; ?>" data-dir="m" class="cursor_p basket_btn_n disable_select_text">
-              <i class="fa fa-minus" aria-hidden="true"></i>
-            </div>
-          </td>
-          <td><input class="vp_b_quan text_center bsk_quan_<?php echo $product_id; ?>" type="number" value="1"></td>
-          <td>
-            <div onclick="basket.spl_update_quan(this);" data-itemid="<?php echo $product_id; ?>" data-dir="p" class="cursor_p basket_btn_n disable_select_text">
-              <i class="fa fa-plus" aria-hidden="true"></i>
-            </div>
-          </td>
-        </tr>
-      </tbody>
-    </table>
-    <div class="btn btn_default" onclick="basket.add(this);" data-itemid="<?php echo $product_id; ?>">
-      Добавить в корзину
+?>
+<script type="text/javascript">
+    $(document).ready(function(){
+      // $('#product_main_image').zoom({url: 'photo-big.jpg'});
+      $('#product_main_image')
+      .wrap('<span style="display:inline-block"></span>')
+      .css('display', 'block')
+      .parent()
+      .zoom();
+    });
+</script>
+<div class="row">
+  <div class="col-md-8">
+    <div class="vp_image">
+      <div class="float_l product_images">
+        <div class="ltl_img">
+          <img src="/images/leo.jpg" alt="">
+        </div>
+        <div class="ltl_img">
+          <img src="/images/leo.jpg" alt="">
+        </div>
+        <div class="ltl_img">
+          <img src="/images/leo.jpg" alt="">
+        </div>
+      </div>
+      <div class="float_l product_main_image">
+        <a id="a_main_image" href="/images/leo.jpg">
+          <img id="product_main_image" src="/images/leo.jpg" alt="">
+        </a>
+      </div>
     </div>
   </div>
+  <div class="col-md-4">
+    <div class="vp_info_item vp_name">
+      <h1><?php echo $product_info['name']; ?></h1>
+    </div>
+    <div class="vp_info_item vp_price">
+      <strong>$<?php echo $product_info['price']; ?></strong>
+    </div>
+    <style media="screen">
+      .disabled_opt_item{
+        background: linear-gradient(to top right, transparent 0%, transparent calc(50% - 1px), #b5b5b5 50%, transparent calc(50% + 1px), transparent 100%);
+        background-color: #f5f5f5;
+        cursor: not-allowed;
+      }
+    </style>
 
-  <div class="vp_info_item">
-    <span>Описание:</span>
-    <div class="">
-      <?php echo $product_info['description']; ?>
+    <?php
+    foreach ($properts as $key => $value) {
+      $propert_id = $value['id'];
+      $propert_name = $value['name'];
+      echo '<div class="vp_info_item mt-2">';
+        echo '<strong>'.$propert_name.':</strong>';
+        echo '<div id="vp_propert_'.$propert_id.'">';
+        $priv_items = array();
+        $options = $value['child'];
+        for ($i = 0; $i < count($options); $i++) {
+          $opts = $options[$i];
+          $element_id = 'id="opt_'.$propert_id.'_'.$opts['id'].'"';
+          $disabled_class = in_array($opts['id'],$allowed_options) ? '' : 'disabled_opt_item';
+          $onclick = in_array($opts['id'],$allowed_options) ? 'onclick="basket.pick_option(this);"' : '';
+
+          echo '<div '.$onclick.' '.$element_id.' data-propertid="'.$propert_id.'" data-optid="'.$opts['id'].'" class="float_l item_prop_'.$propert_id.' item_opt_'.$opts['id'].' '.$disabled_class.' opt_item '.$active_opt.'">';
+          echo !empty($opts['color']) ? '<div class="opt_backr" style="background: '.$opts['color'].'"></div>' : '<div class="opt_text text_center">'.$opts['name'].'</div>';
+          echo '</div>';
+        }
+        echo '</div>';
+        echo '<div class="clear"></div>';
+      echo '</div>';
+    }
+    ?>
+
+    <div class="vp_info_item mt-2">
+      <table class="text_center basket_btns i_block v_align_middle">
+        <tbody>
+          <tr>
+            <td>
+              <div onclick="basket.spl_update_quan(this);" data-itemid="<?php echo $product_id; ?>" data-dir="m" class="cursor_p basket_btn_n disable_select_text">
+                <i class="fa fa-minus" aria-hidden="true"></i>
+              </div>
+            </td>
+            <td><input class="vp_b_quan text_center bsk_quan_<?php echo $product_id; ?>" type="number" value="1"></td>
+            <td>
+              <div onclick="basket.spl_update_quan(this);" data-itemid="<?php echo $product_id; ?>" data-dir="p" class="cursor_p basket_btn_n disable_select_text">
+                <i class="fa fa-plus" aria-hidden="true"></i>
+              </div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+      <div class="btn btn-secondary" onclick="basket.add(this);" data-itemid="<?php echo $product_id; ?>">
+        Добавить в корзину
+      </div>
+    </div>
+
+    <div class="vp_info_item mt-2">
+      <span>Описание:</span>
+      <div class="">
+        <?php echo $product_info['description']; ?>
+      </div>
     </div>
   </div>
 </div>
-<div class="clear"></div>
+<hr>
+<div class="">
+  <h3>Похожие товары</h3>
+  <div class="row">
+    <?php
+    for ($i=0; $i < 4; $i++) {
+      $image_src = '/images/leo.jpg';
+
+      echo '<div class="col-md-3 product">';
+        echo '<a href="/product.php?id='.$id.'" title="'.$name.'">';
+          echo '<div class="product_img">';
+          echo '<img src="'.$image_src.'" alt="'.$name.'">';
+          echo '</div>';
+          echo '</a>';
+          echo '<div class="card-body">';
+          echo '<h4 class="card-title">'.$name.'</h4>';
+        echo '<div class="card-text product_price">';
+        // echo '<span class="p_old_price">$65</span> ';
+        echo ' $'.$price;
+        echo '</div>';
+        echo '<div class="card-text mt-2">';
+          echo '<strong>Бесплатная доставка от 40</strong>';
+          echo '</div>';
+        echo '</div>';
+      echo '</div>';
+    }
+    ?>
+  </div>
+
+</div>
+
+<hr>
+<div class="">
+  <h3>Отзывы</h3>
+  <div class="">
+    <div class="media">
+      <div class="media-body">
+        <h4 class="media-heading">
+          User Name <small><i>Опубликован 23.01.2031</i></small>
+        </h4>
+        <p>Lorem ipsum dolor sit amet</p>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+
+
 
 <?php
 
@@ -195,23 +274,6 @@ $(document).ready(function(){
 
 
 });
-
-
-function show_p(propert_id,option_id) {
-
-  $('.opt_item').hide();
-  $('.item_prop_' + propert_id).show();
-
-  for (var prop in allowed[propert_id][option_id]) {
-
-    for (var i = 0; i < allowed[propert_id][option_id][prop].length; i++) {
-
-      $('#opt_' + prop + '_' + allowed[propert_id][option_id][prop][i]).show();
-
-    }
-
-  }
-}
 
 </script>
 

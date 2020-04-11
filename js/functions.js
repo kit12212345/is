@@ -36,7 +36,10 @@ function set_url_param(name,value){
   current_url = current_url.split('?')[1];
 
   value = encodeURIComponent(value);
-
+  if(typeof current_url === 'undefined') {
+    new_url = '?' + name + '=' + value;
+    return window.history.pushState(null, null, new_url);
+  }
   if(current_url.indexOf(name) >= 0){
     var param = current_url.split(name + '=')[1];
     param = param.split('&')[0];

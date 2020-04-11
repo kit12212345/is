@@ -129,13 +129,14 @@ Class Options extends Property{
 
     $name = mysql_real_escape_string($name);
 
-    $q_product_info = ("SELECT `price` FROM `catalog`
+    $q_product_info = ("SELECT `price`,`parent_id` FROM `catalog`
     WHERE `id` = '".$product_id."'");
     $r_product_info = mysql_query($q_product_info) or die(DB_ERROR);
     $n_product_info = mysql_numrows($r_product_info); // or die("cant get numrows query");
     if($n_product_info > 0){
       $price = !isset($data['price']) || empty($data['price']) ? htmlspecialchars(mysql_result($r_product_info, 0, "price")) : $data['price'];
       $count = !isset($data['count']) ? 0 : (int)$data['count'];
+      $parent_id = htmlspecialchars(mysql_result($r_product_info, 0, "parent_id"));
     } else generate_exception('Товар не найден');
 
 
@@ -223,6 +224,23 @@ Class Options extends Property{
           'propert_name' => $propert_name,
           'propert_color' => $propert_color
         ));
+
+
+
+        $q_check_opt = ("SELECT `id` FROM `catalog_options`
+        WHERE `catalog_id` = '".$parent_id."' AND `option_id` = '".$item_id."'");
+        $r_check_opt = mysql_query($q_check_opt) or die(DB_ERROR);
+        $n_check_opt = mysql_numrows($r_check_opt); // or die("cant get numrows query");
+        if($n_check_opt > 0) continue;
+
+        $q_query = ("INSERT INTO `catalog_options`
+        (`catalog_id`,
+        `option_id`)
+         values
+         ('".$parent_id."',
+          '".$item_id."'".")");
+        mysql_query($q_query) or die(generate_exception(DB_ERROR));
+
 
       }
 
