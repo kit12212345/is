@@ -1,4 +1,5 @@
 <?php
+if(!class_exists("Lang")) include_once($root_dir.'/include/classes/lang.php');
 if(!class_exists("Auth")) include_once($root_dir.'/include/classes/auth.php');
 
 class User{

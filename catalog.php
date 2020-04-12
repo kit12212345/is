@@ -16,6 +16,7 @@ $arr_selected_options = explode(',',$selected_options);
 $current_cat_info = $init_catlog->get_product_info($parent_id);
 $is_last_cat = $current_cat_info === false ? 1 : $current_cat_info['is_last'];
 $catalog_options = $current_cat_info !== false ? $current_cat_info['catalog_options'] : array();
+$count_catalog_options = count($catalog_options);
 
 $catalogs_info = $init_catlog->get_catalogs(array(
   'parent_id' => $parent_id
@@ -61,7 +62,7 @@ $pages_html = $products_info['pages_html'];
       </div>
     </div>
     <?php
-    if($parent_id > 0 && $is_last_cat > 0){
+    if($parent_id > 0 && $is_last_cat > 0 && $count_catalog_options){
       foreach ($properts as $key => $value) {
         $propert_id = $value['id'];
         $propert_name = $value['name'];
@@ -98,20 +99,27 @@ $pages_html = $products_info['pages_html'];
 
   </div>
   <div class="col-md-9">
-    <div class="d-flex flex-row align-items-end">
-      <div class="mr-auto">
-        Товров: <span id="count_all_products"><?php echo $count_all_products; ?></span>
+    <?php
+    if($is_last_cat > 0){
+      ?>
+      <div class="d-flex flex-row align-items-end">
+        <div class="mr-auto">
+          Товров: <span id="count_all_products"><?php echo $count_all_products; ?></span>
+        </div>
+        <div class="ml-auto">
+          <select class="form-control" id="catalog_sort_by" onchange="catalog.pick_sort_by(this.value)" name="">
+            <option value="default">Сортировать по:</option>
+            <option value="price_high_to_low">По возрастанию цены</option>
+            <option value="price_low_to_high">По убыванию цены</option>
+          </select>
+        </div>
       </div>
-      <div class="ml-auto">
-        <select class="form-control" id="catalog_sort_by" onchange="catalog.pick_sort_by(this.value)" name="">
-          <option value="default">Сортировать по:</option>
-          <option value="price_high_to_low">По возрастанию цены</option>
-          <option value="price_low_to_high">По убыванию цены</option>
-        </select>
-      </div>
-    </div>
 
-    <hr>
+      <hr>
+
+      <?php
+    }
+    ?>
 
     <div class="relative products_wrap row" id="products_wrap">
       <?php
@@ -127,10 +135,10 @@ $pages_html = $products_info['pages_html'];
           echo '<div class="col-md-3 b_catalog">';
           echo '<a href="/catalog.php?parent_id='.$id.'">';
           echo '<div class="catalog_img">';
-          echo '<img src="'.$image_src.'" alt="'.$name.'">';
-          echo '<div class="catalog_body">';
-          echo '<h4 class="catalog_title">'.$name.'</h4>';
+          echo '<img src="'.$image_src.'" class="cover_img" alt="'.$name.'">';
           echo '</div>';
+          echo '<div class="catalog_body product_body">';
+          echo '<h4 class="catalog_title">'.$name.'</h4>';
           echo '</div>';
           echo '</a>';
           echo '</div>';
@@ -141,7 +149,7 @@ $pages_html = $products_info['pages_html'];
       } else if($count_products > 0){
         echo $products_html;
       } else{
-        echo '<div class="text_center"><strong>Нет товаров</strong></div>';
+        echo '<div class="d_block full_w text_center"><strong>Нет товаров</strong></div>';
       }
 
       ?>

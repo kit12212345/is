@@ -5,8 +5,9 @@ include_once($root_dir.'/include/classes/catalog.php');
 
 $item_id = isset($_GET['item_id']) ? (int)$_GET['item_id'] : 0;
 
-$uploader_table_name = 'user_recipes_images';
 $catalog = new Catalog();
+
+$uploader_table_name = 'catalog_images';
 
 if($item_id > 0){
 
@@ -20,7 +21,6 @@ if($item_id > 0){
     $quan = $product_info['quan'];
     $parent_id = $product_info['parent_id'];
 
-    $uploader_table_name = 'catalog_images';
 
   }
 }

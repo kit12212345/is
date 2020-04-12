@@ -8,6 +8,12 @@ var catalog = {
     this.parent_id = catalog_info.parent_id;
     this.selected_options = catalog_info.selected_options;
   },
+  pick_m_image: function(element){
+    var image_src = $(element).data('imagesrc');
+    $('#a_main_image').attr('href',image_src);
+    $('#product_main_image').attr('src',image_src);
+    $('.zoomImg').attr('src',image_src);
+  },
   get_active_options: function(){
     var options = [];
     var active_param_items = $('.active_param_item');

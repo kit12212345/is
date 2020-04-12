@@ -1,17 +1,10 @@
 <?php
-if(isset($is_capcha_page) && $is_capcha_page === true){
-  //nothing
-} else{
-  if(!class_exists("Alias")) include_once($root_dir.'/components/alias/alias.php');
-}
-
 class L {
   public $asd;
 }
 class Lang{
   public $lang;
   public $l;
-  public $uploader_l;
   public static $b_content = array(
     'ru' => 'ru_RU',
     'en' => 'en_EN'
@@ -25,36 +18,6 @@ class Lang{
     'en' => 'English'
   );
 
-  public static $page_keywords = array(
-    'recipes' => array(
-      'ru' => 'рецепты, кулинарные, как, приготовить, пошагово, с, фото, какие, все',
-      'en' => 'recipes, cooking, how to cook, step by step, with, photos, what, all'
-    )
-  );
-
-  public static $page_description = array(
-    'recipes' => array(
-      'ru' => 'все рецепты сайта. Здесь вы можете найти блюда на любой вкус.',
-      'en' => 'all recipes site. Here you can find dishes for every taste.'
-    ),
-    'popular' => array(
-      'ru' => 'лучшие рецепты сайта.',
-      'en' => 'best recipes site.'
-    ),
-    'contacts' => array(
-      'ru' => 'контакты, связаться с нами.',
-      'en' => 'contact us.'
-    ),
-    'add_recipe' => array(
-      'ru' => 'добавить рецепт.',
-      'en' => 'add recipe.'
-    ),
-    'search' => array(
-      'ru' => 'как, приготовить, рецепт, с, фото,',
-      'en' => 'how to cook, recipe, with, photo,'
-    )
-  );
-
   function __construct(Array $data = array()){
     GLOBAL $main_page;
 
@@ -65,7 +28,7 @@ class Lang{
       setcookie("switch_lang","",time() - 1000,'/');
     } else if(!isset($main_page) && $main_page !== true &&
       !isset($_COOKIE['switch_lang']) && $_COOKIE['switch_lang'] != '1'){
-      $lang = Alias::get_lang($_GET['key1']);
+      $lang = 'ru';
       $_COOKIE['lang'] = $lang;
       setcookie("lang",$lang,time() + 1000000,'/');
     }
@@ -103,5 +66,4 @@ $lang = new Lang();
 define(LANG,$lang->lang);
 
 $l = $lang->l;
-$uploader_l = $lang->uploader_l;
 ?>

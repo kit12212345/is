@@ -10,7 +10,7 @@ var catalog = {
     var data = $("#products_info").data('info');
     this.current_product_id = data.product_id;
 
-    uploader_recipe_image = new Uploader({
+    uploader_image = new Uploader({
       value_item: this.current_product_id > 0 ? this.current_product_id : $('#md5_hash').val(),
       _event: this.current_product_id > 0 ? 'edit_product' : 'add_product',
       max_files: 10
@@ -20,6 +20,12 @@ var catalog = {
   init_cat_edit: function(){
     var data = $("#products_info").data('info');
     this.current_cat_id = data.cat_id;
+
+    uploader_image = new Uploader({
+      value_item: this.current_cat_id > 0 ? this.current_cat_id : $('#md5_hash').val(),
+      _event: this.current_cat_id > 0 ? 'edit_cat' : 'add_cat',
+      max_files: 1
+    });
   },
   set_search_by: function(search_by){
     this.current_search_by = search_by;
@@ -157,6 +163,7 @@ var catalog = {
   save_catalog: function(){
     var name = $('#cat_name').val(),
     parent_id = $('#parent_id').val(),
+    image_hash = $('#md5_hash').val(),
     description = $('#cat_description').val();
 
     preload_page();
@@ -168,6 +175,7 @@ var catalog = {
         action: 'save_catalog',
         name: name,
         parent_id: parent_id,
+        image_hash: image_hash,
         cat_id: this.current_cat_id,
         description: description
       },

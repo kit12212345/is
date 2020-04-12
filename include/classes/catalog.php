@@ -334,6 +334,87 @@ class Catalog{
     );
   }
 
+  public function get_product_images($product_id, $not_main = true){
+    $images = array();
+
+    $query_main_image = " AND `position` > '1' ";
+
+    if($not_main === false) $query_main_image = "";
+
+    $q_iamges = ("SELECT * FROM `catalog_images`  WHERE `item_id` = '".$product_id."' ".$query_main_image." ORDER BY `position` ASC");
+    $r_iamges = mysql_query($q_iamges) or die($q_products);
+    $n_iamges = mysql_numrows($r_iamges); // or die("cant get numrows query");
+    if($n_iamges > 0){
+      for ($i = 0; $i < $n_iamges; $i++) {
+        $id = htmlspecialchars(mysql_result($r_iamges, $i, "id"));
+        $image = htmlspecialchars(mysql_result($r_iamges, $i, "image"));
+        array_push($images,array(
+          'id' => $id,
+          'image' => $image
+        ));
+      }
+    }
+    return $images;
+  }
+
+  public function get_similar_products($product_id){
+    $html = '';
+    $products = array();
+
+    $q_products = ("SELECT
+      DISTINCT `catalog`.`id`,
+      `catalog`.`name`,
+      `catalog`.`price`,
+      `catalog`.`main_image`
+    FROM `catalog` WHERE `catalog`.`deleted` = '0' AND `catalog`.`type` = 'product'
+    AND `catalog`.`parent_id` =
+      (SELECT `parent_id` FROM `catalog` AS `_cc_` WHERE `_cc_`.`id` = '".$product_id."' ) LIMIT 4");
+    $r_products = mysql_query($q_products) or die($q_products);
+    $n_products = mysql_numrows($r_products); // or die("cant get numrows query");
+    if($n_products > 0){
+      for ($i = 0; $i < $n_products; $i++) {
+        $id = htmlspecialchars(mysql_result($r_products, $i, "catalog.id"));
+        $name = htmlspecialchars(mysql_result($r_products, $i, "catalog.name"));
+        $price = htmlspecialchars(mysql_result($r_products, $i, "catalog.price"));
+        $main_image = htmlspecialchars(mysql_result($r_products, $i, "catalog.main_image"));
+
+        $product_data = array(
+          'id' => $id,
+          'name' => $name,
+          'price' => $price,
+          'main_image' => $main_image,
+        );
+
+        array_push($products,$product_data);
+
+        $image_src = empty($main_image) ? '/images/no_img.png' : '/images/catalog/t_480/'.$main_image;
+
+        $html .= '<div class="col-md-3 product">';
+        $html .= '<a href="/product.php?id='.$id.'" title="'.$name.'">';
+        $html .= '<div class="product_img">';
+        $html .= '<img src="'.$image_src.'" alt="'.$name.'">';
+        $html .= '</div>';
+        $html .= '</a>';
+        $html .= '<div class="product_body">';
+        $html .= '<h4 class="product_title">'.$name.'</h4>';
+        $html .= '<div class="product_price">';
+        // $html .= '<span class="p_old_price">$65</span> ';
+        $html .= ' $'.$price;
+        $html .= '</div>';
+        $html .= '<div class="mt-2">';
+        $html .= '<strong>Бесплатная доставка от 40</strong>';
+        $html .= '</div>';
+        $html .= '</div>';
+        $html .= '</div>';
+
+      }
+    }
+    return array(
+      'products' => $products,
+      'html' => $html
+    );
+  }
+
   public function get_product_info($item_id){
     $data = array();
     $q_products = ("SELECT * FROM `catalog` WHERE `id` = '".$item_id."'");
@@ -363,6 +444,7 @@ class Catalog{
             array_push($catalog_options,$c_option_id);
           }
         }
+
 
         $data = array(
           'id' => $id,
@@ -602,7 +684,7 @@ class Catalog{
 
 
     if($type == 'catalog'){
-      $image_src = '/images/folder.png';
+      $image_src = !empty($main_image) ? '/images/catalog/t_140/'.$main_image : '/images/folder.png';
       $href_view_product = 'onclick="catalog.set_parent_id('.$id.');"';
     } else{
       $image_src = !empty($main_image) ? '/images/catalog/t_140/'.$main_image : '/images/no_img.png';
@@ -705,6 +787,7 @@ class Catalog{
     $cat_id = isset($data['cat_id']) ? (int)$data['cat_id'] : 0;
     $name = $data['name'];
     $description = $data['description'];
+    $image_hash = $data['image_hash'];
     $parent_id = (int)$data['parent_id'];
 
     if($cat_id > 0){
@@ -735,6 +818,44 @@ class Catalog{
       mysql_query($q_query) or die(generate_exception(DB_ERROR));
 
       $cat_id = mysql_insert_id();
+
+
+      $q_temp_images = ("SELECT * FROM `temp_images` WHERE `temp_images`.`md5_hash` = '".$image_hash."'");
+      $r_temp_images = mysql_query($q_temp_images) or die(generate_exception($db_error));
+      $n_temp_images = mysql_numrows($r_temp_images); // or die("cant get numrows query");
+      if ($n_temp_images > 0){
+        for ($i = 0; $i < $n_temp_images; $i++) {
+          $image_id = htmlspecialchars(mysql_result($r_temp_images, $i, "temp_images.id"));
+          $image_name = htmlspecialchars(mysql_result($r_temp_images, $i, "temp_images.image"));
+          $image_position = htmlspecialchars(mysql_result($r_temp_images, $i, "temp_images.position"));
+
+          if($image_position == 1){
+
+            $q_set_deleted = ("UPDATE `catalog` SET `main_image`='".$image_name."' WHERE `id`='".$cat_id."'");
+            mysql_query($q_set_deleted) or die("cant execute update set_deleted");
+
+          }
+
+          $q_query = ("INSERT INTO
+          `catalog_images`
+          (
+          `item_id`,
+          `image`,
+          `position`,
+          `create_date`)
+          values(
+          '".$cat_id."',
+          '".$image_name."',
+          '".$image_position."',
+          '".$this->create_date."')");
+          mysql_query($q_query) or die(generate_exception(DB_ERROR));
+
+          $q_delete_temp_image = ("DELETE FROM `temp_images` WHERE `temp_images`.`id`='".$image_id."'");
+          mysql_query($q_delete_temp_image) or die(generate_exception($db_error));
+
+
+          }
+        }
 
     }
 
@@ -793,12 +914,13 @@ class Catalog{
     $price = $data['price'];
     $quan = $data['quan'];
     $image_hash = $data['image_hash'];
-    $parent_id = $data['parent_id'];
+    $parent_id = (int)$data['parent_id'];
 
     $name = mysql_real_escape_string($name);
     $description = mysql_real_escape_string($description);
     $price = mysql_real_escape_string($price);
     $quan = mysql_real_escape_string($quan);
+    $image_hash = mysql_real_escape_string($image_hash);
 
     $q_last_parent_id = ("SELECT * FROM `catalog` WHERE `parent_id` = '".$parent_id."' AND `type` = 'catalog'");
     $r_last_parent_id = mysql_query($q_last_parent_id) or die(generate_exception($db_error));

@@ -9,16 +9,23 @@ $product_id = (int)$_GET['id'];
 
 $init_options = new ProductsOptions();
 $init_catlog = new Catalog();
+$product_info = $init_catlog->get_product_info($product_id);
+
+$similar_products = $init_catlog->get_similar_products($product_id);
 
 $allowed_properts = $init_options->get_allowed_properts($product_id);
 
 $properts = $init_options->get_properts();
-$product_info = $init_catlog->get_product_info($product_id);
 $product_options = $init_options->get_options($product_id,$allowed_properts);
 $count_product_options = count($product_options);
 $name = $product_info['name'];
+$price = $product_info['price'];
 $description = $product_info['description'];
 $main_image = $product_info['main_image'];
+$similar_products_html = $similar_products['html'];
+
+$product_images = $init_catlog->get_product_images($product_id,false);
+$count_product_images = count($product_images);
 
 $allowed_options = array();
 foreach ($allowed_properts as $key => $value) {
@@ -41,31 +48,31 @@ foreach ($allowed_properts as $key => $value) {
 </script>
 <div class="row">
   <div class="col-md-8">
-    <div class="vp_image">
-      <div class="float_l product_images">
-        <div class="ltl_img">
-          <img src="/images/leo.jpg" alt="">
-        </div>
-        <div class="ltl_img">
-          <img src="/images/leo.jpg" alt="">
-        </div>
-        <div class="ltl_img">
-          <img src="/images/leo.jpg" alt="">
-        </div>
+    <div class="vp_image d-flex flex-row">
+      <div class="col-md-2">
+        <?php
+        for ($i = 0; $i < $count_product_images; $i++) {
+          $image_id = $product_images[$i]['id'];
+          $image = $product_images[$i]['image'];
+          echo '<div onclick="catalog.pick_m_image(this);" class="cursor_p ltl_img" data-imageid="'.$image_id.'" data-imagesrc="/images/catalog/t_1024/'.$image.'">';
+            echo '<img src="/images/catalog/t_140/'.$image.'" alt="'.$name.'">';
+          echo '</div>';
+        }
+        ?>
       </div>
-      <div class="float_l product_main_image">
-        <a id="a_main_image" href="/images/leo.jpg">
-          <img id="product_main_image" src="/images/leo.jpg" alt="">
+      <div class="col-md-10">
+        <a class="a_main_image" id="a_main_image" href="/images/catalog/t_1024/<?php echo $main_image; ?>">
+          <img id="product_main_image" src="/images/catalog/t_1024/<?php echo $main_image; ?>" class="mx-auto d-block" alt="<?php echo $name; ?>">
         </a>
       </div>
     </div>
   </div>
   <div class="col-md-4">
     <div class="vp_info_item vp_name">
-      <h1><?php echo $product_info['name']; ?></h1>
+      <h1><?php echo $name; ?></h1>
     </div>
     <div class="vp_info_item vp_price">
-      <strong>$<?php echo $product_info['price']; ?></strong>
+      <strong>$<?php echo $price; ?></strong>
     </div>
 
     <?php
@@ -111,7 +118,7 @@ foreach ($allowed_properts as $key => $value) {
           </tr>
         </tbody>
       </table>
-      <div class="btn btn-secondary" onclick="basket.add(this);" data-itemid="<?php echo $product_id; ?>">
+      <div class="btn btn-default" onclick="basket.add(this);" data-itemid="<?php echo $product_id; ?>">
         Добавить в корзину
       </div>
     </div>
@@ -129,27 +136,7 @@ foreach ($allowed_properts as $key => $value) {
   <h3>Похожие товары</h3>
   <div class="row">
     <?php
-    for ($i=0; $i < 4; $i++) {
-      $image_src = '/images/leo.jpg';
-
-      echo '<div class="col-md-3 product">';
-        echo '<a href="/product.php?id='.$id.'" title="'.$name.'">';
-          echo '<div class="product_img">';
-          echo '<img src="'.$image_src.'" alt="'.$name.'">';
-          echo '</div>';
-          echo '</a>';
-          echo '<div class="card-body">';
-          echo '<h4 class="card-title">'.$name.'</h4>';
-        echo '<div class="card-text product_price">';
-        // echo '<span class="p_old_price">$65</span> ';
-        echo ' $'.$price;
-        echo '</div>';
-        echo '<div class="card-text mt-2">';
-          echo '<strong>Бесплатная доставка от 40</strong>';
-          echo '</div>';
-        echo '</div>';
-      echo '</div>';
-    }
+    echo $similar_products_html;
     ?>
   </div>
 
@@ -158,6 +145,22 @@ foreach ($allowed_properts as $key => $value) {
 <hr>
 <div class="">
   <h3>Отзывы</h3>
+  <div class="">
+    <div class="form-group">
+      <label for="review_user_name">Ваше имя</label>
+      <input type="text" id="review_user_name" class="form-control" value="" placeholder="Ваше имя">
+    </div>
+    <div class="form-group">
+      <label for="review_text">Текст отзыва</label>
+      <textarea class="form-control" id="review_text" placeholder="Текст отзыва" rows="3"></textarea>
+    </div>
+    <div class="d-flex flex-row">
+      <div class="btn ml-auto btn-secondary">
+        Отправить
+      </div>
+    </div>
+  </div>
+  <hr>
   <div class="">
     <div class="media">
       <div class="media-body">

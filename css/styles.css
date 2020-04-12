@@ -29,10 +29,11 @@ li{
 }
 a{
   text-decoration: none;
-  color: #026aa7;
+  color: #1e3352;
 }
 a:hover, a:active{
   text-decoration: none;
+  color: #1e3352;
 }
 input,div,button{
   outline: none;
@@ -147,4 +148,93 @@ input[type="number"]{ -moz-appearance: textfield; }
   background: #fff;
   padding-top: 0px;
   padding-bottom: 0px;
+}
+.header{
+  background: #fff;
+  box-shadow: 0 3px 3px 0 rgba(0, 0, 0, 0.2);
+}
+.header .navbar{
+  padding: 0px;
+}
+.main_container{
+  margin-top: 100px;
+}
+.header_content{
+}
+.container{
+  max-width: 1280px;
+}
+.top_menu_item a{
+  background: #fff!important;
+  color: #2e3133!important;
+  font-weight: 500;
+}
+.top_menu_item > a::after{
+  content: '';
+  display: block;
+  visibility: hidden;
+  height: 2px;
+  width: 100%;
+  background: #1e3352;
+}
+.top_menu_item:hover > a::after, .active_top_menu > a::after{
+  visibility: visible;
+}
+.top_line{
+  background: #1e3352;
+  height: 30px;
+}
+.top_line .navbar-nav>li>a{
+  color: #fff;
+  padding: 5px 15px;
+}
+.top_line .navbar-nav>li>a:hover{
+  color: #fbfbfb;
+}
+.top_basket{
+  color: #1e3352!important;
+  padding: 12px 0px;
+}
+.top_basket a{
+  padding: 0px!important;
+  color: #1e3352!important;
+}
+.top_basket .fa{
+  font-size: 25px;
+}
+.top_basket .badge{
+  top: 5px;
+  left: 22px;
+  background: #1e3352;
+}
+.top_info_string{
+  padding: 6px 0px;
+}
+.top_info_string , .top_info_string a{
+  color: #fff;
+}
+.top_info_string a{
+  text-decoration: underline;
+}
+.btn-default{
+  background: #1e3352;
+  border-color: #16243a;
+  border-radius: 0px;
+  color: #fff;
+}
+.btn-default:hover{
+  color: #fff;
+}
+.box{
+  background: #fff;
+  margin-bottom: 15px;
+  -moz-box-shadow: 1px 1px 4px rgba(204, 204, 204, 0.44), 0px 0px 3px rgba(204, 204, 204, 0.56);
+  -khtml-box-shadow: 1px 1px 4px rgba(204, 204, 204, 0.44), 0px 0px 3px rgba(204, 204, 204, 0.56);
+  -webkit-box-shadow: 1px 1px 4px rgba(204, 204, 204, 0.44), 0px 0px 3px rgba(204, 204, 204, 0.56);
+  -ms-box-shadow: 1px 1px 4px rgba(204, 204, 204, 0.44), 0px 0px 3px rgba(204, 204, 204, 0.56);
+  -o-box-shadow: 1px 1px 4px rgba(204, 204, 204, 0.44), 0px 0px 3px rgba(204, 204, 204, 0.56);
+  box-shadow: 1px 1px 4px rgba(204, 204, 204, 0.44), 0px 0px 3px rgba(204, 204, 204, 0.56);
+}
+.login_box_content{
+  padding: 10px 20px 20px 20px;
 }

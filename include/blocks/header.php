@@ -32,75 +32,6 @@ $init_basket = new Basket(array(
   <script src="/js/bootstrap.min.js"></script>
 </head>
 <body>
-  <style media="screen">
-    .header{
-      background: #fff;
-      box-shadow: 0 3px 3px 0 rgba(0, 0, 0, 0.2);
-    }
-    .header .navbar{
-      padding: 0px;
-    }
-    .main_container{
-      margin-top: 100px;
-    }
-    .header_content{
-    }
-    .container{
-      max-width: 1280px;
-    }
-    .top_menu_item a{
-      background: #fff!important;
-      color: #2e3133!important;
-      font-weight: 500;
-    }
-    .top_menu_item > a::after{
-      content: '';
-      display: block;
-      visibility: hidden;
-      height: 2px;
-      width: 100%;
-      background: #1e3352;
-    }
-    .top_menu_item:hover > a::after, .active_top_menu > a::after{
-      visibility: visible;
-    }
-    .top_line{
-      background: #1e3352;
-      height: 30px;
-    }
-    .top_line .navbar-nav>li>a{
-      color: #fff;
-      padding: 5px 15px;
-    }
-    .top_line .navbar-nav>li>a:hover{
-      color: #fbfbfb;
-    }
-    .top_basket{
-      color: #1e3352!important;
-      padding: 12px 0px;
-    }
-    .top_basket a{
-      padding: 0px!important;
-      color: #1e3352!important;
-    }
-    .top_basket .fa{
-      font-size: 25px;
-    }
-    .top_basket .badge{
-      top: 5px;
-      left: 22px;
-      background: #1e3352;
-    }
-    .top_info_string{
-      padding: 6px 0px;
-    }
-    .top_info_string , .top_info_string a{
-      color: #fff;
-    }
-    .top_info_string a{
-      text-decoration: underline;
-    }
-  </style>
   <header class="fixed-top header">
       <nav class="navbar navbar-expand-lg navbar-fixed-top top_menu">
         <div class="top_line container-fluid">
@@ -112,8 +43,8 @@ $init_basket = new Basket(array(
                 </a>
               </span>
               <ul class="nav navbar-nav">
-                <li><a href="#"><span class="glyphicon glyphicon-user"></span> Регистрация</a></li>
-                <li><a href="#"><span class="glyphicon glyphicon-log-in"></span> Вход</a></li>
+                <li><a href="/registration.php"><span class="glyphicon glyphicon-user"></span> Регистрация</a></li>
+                <li><a href="/login.php"><span class="glyphicon glyphicon-log-in"></span> Вход</a></li>
               </ul>
           </div>
         </div>

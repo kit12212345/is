@@ -3,18 +3,6 @@ var json_lang = {
     "ru": "Главная",
     "en": "Main"
   },
-  "recipes": {
-    "ru": "Рецепты",
-    "en": "Recipes"
-  },
-  "recipes_l": {
-    "ru": "Рецепты",
-    "en": "recipes"
-  },
-  "popular": {
-    "ru": "Популярные блюда",
-    "en": "Popular"
-  },
   "lang": {
     "ru": "Язык",
     "en": "Language"
@@ -35,9 +23,9 @@ var json_lang = {
     "ru": "Отправлен",
     "en": "Date"
   },
-  "name": {
+  "first_name": {
     "ru": "Имя",
-    "en": "Name"
+    "en": "First name"
   },
   "last_name": {
     "ru": "Фамилия",
@@ -95,7 +83,7 @@ var json_lang = {
     "ru": "Email",
     "en": "Email"
   },
-  "enter_name": {
+  "enter_first_name": {
     "ru": "Введите ваше имя",
     "en": "Enter your name"
   },
@@ -159,38 +147,6 @@ var json_lang = {
     "ru": "Теги",
     "en": "Tags"
   },
-  "cooking": {
-    "ru": "Приготовление",
-    "en": "To make"
-  },
-  "ingredients": {
-    "ru": "Ингредиенты",
-    "en": "Ingredients"
-  },
-  "if_any": {
-    "ru": "если есть",
-    "en": "if any"
-  },
-  "ingredient_name": {
-    "ru": "Название ингредиента",
-    "en": "The name of the ingredient"
-  },
-  "enter_ingredient_name": {
-    "ru": "Введите название ингредиента",
-    "en": "Enter the name of the ingredient"
-  },
-  "divide_ingredient": {
-    "ru": "Разделить ингредиенты",
-    "en": "Divide the ingredients"
-  },
-  "divide_ingredient_info": {
-    "ru": "Разделение ингредиентов происходит символом ; ",
-    "en": "The separation of ingredients takes place ; "
-  },
-  "add_ingredient": {
-    "ru": "Добавить ингредиент",
-    "en": "Add ingredient"
-  },
   "views": {
     "ru": "Просмотров",
     "en": "Views"
@@ -203,10 +159,6 @@ var json_lang = {
     "ru": "Опубликовано",
     "en": "Published"
   },
-  "helpful": {
-    "ru": "Был ли этот рецепт вам полезен?",
-    "en": "Was this recipe helpful to you?"
-  },
   "yes": {
     "ru": "Да",
     "en": "Yes"
@@ -215,9 +167,9 @@ var json_lang = {
     "ru": "Нет",
     "en": "No"
   },
-  "similar_recipes": {
-    "ru": "Похожие рецепты",
-    "en": "Similar recipes"
+  "similar_products": {
+    "ru": "Похожие товары",
+    "en": "Similar products"
   },
   "newly_added": {
     "ru": "Недавно добавленныe",

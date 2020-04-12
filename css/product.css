@@ -151,3 +151,7 @@
   text-decoration: line-through;
   margin-right: 5px;
 }
+.a_main_image *{
+  display: block!important;
+  margin: auto!important;
+}

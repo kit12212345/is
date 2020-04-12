@@ -15,19 +15,19 @@ class Auth extends User{
   public function login(Array $data = array()){
     GLOBAL $l;
 
-    $login = $data['login'];
+    $email = $data['email'];
     $password = $data['password'];
 
-    $login = trim($login);
+    $email = trim($email);
     $password = trim($password);
 
-    if(empty($login)) generate_exception($l->enter_username);
+    if(empty($email)) generate_exception($l->enter_email);
     if(empty($password)) generate_exception($l->enter_password);
 
-    $login = mysql_real_escape_string($login);
+    $email = mysql_real_escape_string($email);
     $password = mysql_real_escape_string($password);
 
-    $q_user = ("SELECT `id`,`password`,`salt`,`confirmed` FROM `users` WHERE `login` = '".$login."'");
+    $q_user = ("SELECT `id`,`password`,`salt`,`confirmed` FROM `users` WHERE `email` = '".$email."'");
     $r_user = mysql_query($q_user) or die(generate_exception(DB_ERROR));
     $n_user = mysql_numrows($r_user); // or die("cant get numrows search_company");
     if($n_user > 0){
@@ -49,39 +49,36 @@ class Auth extends User{
   public function registration(Array $data = array()){
     GLOBAL $l;
 
-    $name = $data['name'];
-    $dir = $data['dir'];
-    $login = $data['login'];
+    $first_name = $data['first_name'];
+    $last_name = $data['last_name'];
     $email = $data['email'];
     $password = $data['password'];
     $repeat_password = $data['repeat_password'];
 
-    $login = trim($login);
+    $first_name = trim($first_name);
+    $last_name = trim($last_name);
     $email = trim($email);
     $password = trim($password);
     $repeat_password = trim($repeat_password);
 
-    if(empty($name)) generate_exception($l->enter_name);
-    if(empty($login)) generate_exception($l->enter_username);
-    if(strlen($login) < 4) generate_exception($l->short_login);
-    if(!preg_match("/[A-Za-z0-9_-]+$/i", $login)) generate_exception($l->wrong_login);
+    if(empty($first_name)) generate_exception($l->enter_first_name);
+    if(empty($last_name)) generate_exception($l->enter_last_name);
     if(empty($email)) generate_exception($l->enter_email);
     if($this->valid_email($email) === 0) generate_exception($l->wrong_email);
     if(empty($password)) generate_exception($l->enter_password);
     if(strlen($password) < 4) generate_exception($l->short_password);
     if(empty($repeat_password)) generate_exception($l->enter_re_password);
     if($password != $repeat_password) generate_exception($l->pass_dont_match);
-    if($this->busy_login($login) === true) generate_exception($l->busy_login);
     if($this->busy_email($email) === true) generate_exception($l->busy_email);
 
     /* RECAPCHA*/
 
-    $this->check_capcha($data);
+    //$this->check_capcha($data);
 
     /* END RECAPCHA*/
 
-    $name = mysql_real_escape_string($name);
-    $login = mysql_real_escape_string($login);
+    $first_name = mysql_real_escape_string($first_name);
+    $last_name = mysql_real_escape_string($last_name);
     $email = mysql_real_escape_string($email);
     $password = mysql_real_escape_string($password);
 
@@ -96,8 +93,8 @@ class Auth extends User{
     $q_query = ("INSERT INTO
     `users`
     (
-    `login`,
-    `name`,
+    `first_name`,
+    `last_name`,
     `email`,
     `password`,
     `salt`,
@@ -105,8 +102,8 @@ class Auth extends User{
     `user_ip`,
     `create_date`)
     values(
-    '".$login."',
-    '".$name."',
+    '".$first_name."',
+    '".$last_name."',
     '".$email."',
     '".$md5_password."',
     '".$salt."',
@@ -118,19 +115,15 @@ class Auth extends User{
 
     $user_id = mysql_insert_id();
 
-    $this->send_registration_email(array(
-      'name' => $name,
-      'email' => $email,
-      'activate_hash' => $activate_hash,
-      'id' => $user_id
-    ));
-
-    if($dir == 'from_contest'){
-      $this->start_session($user_id);
-    }
+    // $this->send_registration_email(array(
+    //   'name' => $name,
+    //   'email' => $email,
+    //   'activate_hash' => $activate_hash,
+    //   'id' => $user_id
+    // ));
 
     return array(
-    'user_id' => $user_id
+      'user_id' => $user_id
     );
 
   }
@@ -181,27 +174,6 @@ class Auth extends User{
     $user_info = $this->get_user_info($user_id);
 
     if($user_info === false) generate_exception($l->user_not_found);
-
-    /* ADD TEMPBOOKMARKS*/
-    $temp_bookmarks = $_COOKIE['bookmarks'];
-    if(!empty($temp_bookmarks)){
-
-      if(!class_exists('UserFavRecipes')) include($_SERVER['DOCUMENT_ROOT'].'/include/classes/fav_recipes.php');
-
-      $init_fav_recipes = new UserFavRecipes(array(
-        'user_id' => $user_id
-      ));
-
-      $temp_bookmarks = json_decode($temp_bookmarks);
-      for ($i = 0; $i < count($temp_bookmarks); $i++){
-        $init_fav_recipes->bookmark(array(
-          'id' => (int)$temp_bookmarks[$i],
-          'type' => 'add'
-        ));
-      }
-      // setcookie("bookmarks","",time()-3600,"/");
-    }
-    /*END ADD TEMPBOOKMARKS*/
 
 
     $last_login = $user_info['last_login'];
@@ -365,16 +337,6 @@ class Auth extends User{
     if($n_check > 0) return true;
     return false;
   }
-
-  public function busy_login($login){
-    $login = mysql_real_escape_string($login);
-    $q_check = ("SELECT `login` FROM  `users` WHERE `login` = '".$login."'");
-    $r_check = mysql_query($q_check) or die(generate_exception(DB_ERROR));
-    $n_check = mysql_num_rows($r_check); // or die("cant get numrows query");
-    if($n_check > 0) return true;
-    return false;
-  }
-
 
   public function get_ip(){
     if (!empty($_SERVER['HTTP_CLIENT_IP'])) {

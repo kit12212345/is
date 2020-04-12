@@ -4,11 +4,9 @@
 // ini_set('display_startup_errors', 1);
 header('Content-Type: application/json');
 session_start();
-$main_page = true;
 $root_dir = $_SERVER['DOCUMENT_ROOT'];
 include_once($root_dir.'/db_connect.php');
 include_once($root_dir.'/include/classes/auth.php');
-$var_admin_id = (int)$LOGGED_USER['id'];
 $var_create_date = time();
 $action = $_POST['action'];
 

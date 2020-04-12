@@ -1,9 +1,11 @@
+<script src="/admin/components/uploader/uploader.js?ver=<?php echo rand(0,199999); ?>" charset="utf-8"></script>
 <?php
+require($root_dir.'/admin/components/uploader/index.php');
 include_once($root_dir.'/include/classes/catalog.php');
 
 $item_id = isset($_GET['item_id']) ? (int)$_GET['item_id'] : 0;
 
-$uploader_table_name = 'user_recipes_images';
+$uploader_table_name = 'catalog_images';
 
 $catalog = new Catalog();
 $parent_id = 0;
@@ -24,36 +26,19 @@ if($item_id > 0){
 
 $tree_cats = $catalog->get_tree_cats($parent_id);
 
+$uploader = new Uploader(array(
+  'table_name' => $uploader_table_name,
+  'item_id' => $item_id,
+  'path' => '/images/catalog/',
+  'max_files' => 1
+));
+
 echo '<div id="products_info" data-info=\'{"parent_id": "'.$product_parent_id.'",';
 echo '"cat_id": "'.(int)$item_id.'",';
 echo '"save_product_cat": "'.(int)$save_product_cat.'",';
 echo '"action_id": "'.(int)$product_action_id.'"';
 echo '}\'></div>';
 ?>
-
-<div id="modal_theme_success" class="modal fade">
-  <div class="modal-dialog">
-    <div class="modal-content">
-      <div class="modal-header bg-success">
-        <button type="button" class="close" data-dismiss="modal">×</button>
-        <h6 class="modal-title">Выберите категорию</h6>
-      </div>
-
-      <div class="modal-body">
-        <div id="s_cats_map"></div>
-        <div id="s_cats_content"></div>
-      </div>
-
-      <hr>
-
-      <div class="modal-footer">
-        <button type="button" class="btn btn-link" data-dismiss="modal">Закрыть</button>
-        <button type="button" class="btn btn-success" onclick="products.select_product_cat();">Выбрать</button>
-      </div>
-    </div>
-  </div>
-</div>
-
 
 <div class="title_add_product">
     <h2 class="panel-title"><?php echo $page_title; ?></h2>
@@ -93,7 +78,21 @@ echo '}\'></div>';
                 <option value="0">Не выбран</option>
                   <?php echo $tree_cats; ?>
               </select>
-              <!-- <input type="number" id="product_quan" value="<?php echo $quan; ?>" placeholder="100" class="form-control"> -->
+            </div>
+            <div class="clear"></div>
+          </div>
+
+          <div class="form-group">
+            <label class="control-label col-lg-2">Изображение:</label>
+            <div class="cont_add_image col-lg-10">
+              <?php
+                 $root_dir = $_SERVER['DOCUMENT_ROOT'];
+                 if($product_id > 0){
+                   $uploader_mode='shop_cat_edit';
+                 } else{
+                   echo $uploader->create_html();
+                 }
+               ?>
             </div>
             <div class="clear"></div>
           </div>
