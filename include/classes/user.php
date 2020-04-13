@@ -12,6 +12,12 @@ class User{
     GLOBAL $l;
     $this->create_date = gmdate('Y-m-d H:i:s');
     $this->user_id = isset($data['user_id']) ? (int)$data['user_id'] : 0;
+
+    $this->menu_items = array(
+      'edit_profile' => $l->profile,
+      'privacy_settings' => $l->privacy_settings
+    );
+
     $this->sex_names = array(
       '1' => $l->male,
       '2' => $l->female
@@ -28,34 +34,24 @@ class User{
     $r_user = mysql_query($q_user) or die(generate_exception(DB_ERROR));
     $n_user = mysql_numrows($r_user); // or die("cant get numrows search_company");
     if($n_user > 0){
-      $login = htmlspecialchars(mysql_result($r_user, 0, "login"));
-      $name = htmlspecialchars(mysql_result($r_user, 0, "name"));
+      $first_name = htmlspecialchars(mysql_result($r_user, 0, "first_name"));
       $last_name = htmlspecialchars(mysql_result($r_user, 0, "last_name"));
-      $middle_name = htmlspecialchars(mysql_result($r_user, 0, "middle_name"));
-      $main_image = htmlspecialchars(mysql_result($r_user, 0, "main_image"));
       $email = htmlspecialchars(mysql_result($r_user, 0, "email"));
+      $birthday = htmlspecialchars(mysql_result($r_user, 0, "birth_date"));
       $salt = htmlspecialchars(mysql_result($r_user, 0, "salt"));
       $password = htmlspecialchars(mysql_result($r_user, 0, "password"));
-      $birth_date = htmlspecialchars(mysql_result($r_user, 0, "birth_date"));
-      $about_me = htmlspecialchars(mysql_result($r_user, 0, "about_me"));
       $sex = htmlspecialchars(mysql_result($r_user, 0, "sex"));
       $recovery_hash = htmlspecialchars(mysql_result($r_user, 0, "recovery_hash"));
       $last_login = htmlspecialchars(mysql_result($r_user, 0, "last_login"));
-      $admin = (int)htmlspecialchars(mysql_result($r_user, 0, "admin"));
 
 
       $user_info = array(
-        'login' => $login,
-        'name' => $name,
+        'first_name' => $first_name,
         'last_name' => $last_name,
-        'middle_name' => $middle_name,
-        'main_image' => $main_image,
         'email' => $email,
         'salt' => $salt,
-        'birth_date' => $birth_date,
-        'about_me' => $about_me,
         'sex' => $sex,
-        'admin' => $admin,
+        'birthday' => $birthday,
         'password' => $password,
         'recovery_hash' => $recovery_hash,
         'last_login' => $last_login
@@ -69,17 +65,13 @@ class User{
 
   public function save_profile(Array $data = array()){
     GLOBAL $l;
-    $name = $data['name'];
+    $first_name = $data['first_name'];
     $last_name = $data['last_name'];
-    $middle_name = $data['middle_name'];
-    $about_me = $data['about_me'];
-    $b_day = $data['b_day'];
-    $b_month = $data['b_month'];
-    $b_year = $data['b_year'];
+    $birthday = $data['birthday'];
     $sex = $data['sex'];
 
 
-    if(empty($name)) generate_exception($l->enter_name);
+    if(empty($first_name)) generate_exception($l->enter_name);
 
     if($sex == 'female') $sex = 2;
     else if($sex == 'male') $sex = 1;
@@ -87,29 +79,22 @@ class User{
 
     $birth_date = '0000-00-00';
 
-    if((int)$b_day > 0 && (int)$b_month > 0 && (int)$b_year > 0){
-      $birth_date = date('Y-m-d',strtotime($b_day.'-'.$b_month.'-'.$b_year));
+    $timest_b = strtotime($birthday);
+
+    if($timest_b !== false){
+      $birth_date = date('Y-m-d',$timest_b);
     }
 
-    $name = mysql_real_escape_string($name);
-    $about_me = mysql_real_escape_string($about_me);
+    $first_name = mysql_real_escape_string($first_name);
     $last_name = mysql_real_escape_string($last_name);
-    $middle_name = mysql_real_escape_string($middle_name);
-
-
 
     $q_user_info = ("UPDATE `users` SET
-      `name` = '".$name."',
+      `first_name` = '".$first_name."',
       `last_name` = '".$last_name."',
-      `middle_name` = '".$middle_name."',
-      `about_me` = '".$about_me."',
       `birth_date` = '".$birth_date."',
       `sex` = '".$sex."'
      WHERE `id` = '".$this->user_id."'");
     mysql_query($q_user_info) or die(generate_exception(DB_ERROR));
-
-
-
 
 
     return true;

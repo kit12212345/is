@@ -2,6 +2,7 @@
 session_start();
 $LOGGED_USER = $_SESSION['logged_user'];
 $time_offset = $_SESSION['time_offset'];
+$user_id = isset($LOGGED_USER['id']) ? (int)$LOGGED_USER['id'] : 0;
 session_write_close();
 $root_dir = $_SERVER['DOCUMENT_ROOT'];
 include($root_dir.'/db_connect.php');
